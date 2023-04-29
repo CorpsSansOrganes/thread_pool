@@ -63,7 +63,7 @@ namespace EK {
       /**
        * @description: Indicates if the queue is empty.
        *
-       * @return True if the queue is empty, False otherwise.
+       * @return true if the queue is empty, false otherwise.
        */
       bool IsEmpty() const;
 
