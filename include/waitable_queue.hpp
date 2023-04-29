@@ -11,10 +11,11 @@
 
 #pragma once 
 
-#include <mutex>              // std::mutex, std::scope_lock
+#include <mutex>              // std::mutex, std::unique_lock
 #include <condition_variable> // std::condition_variable
 #include <chrono>             // std::chrono::milliseconds
 #include <queue>              // std::queue
+#include <atomic>             // std::atomic_uint
 
 namespace EK {
 
@@ -71,9 +72,64 @@ namespace EK {
       WaitableQueue(const WaitableQueue&) = delete;
       WaitableQueue& operator=(const WaitableQueue&) = delete;
 
+      // Default dtor is sufficient.
+      ~WaitableQueue() = default;
+
     private:
       Container m_queue;
       mutable std::mutex m_mutex;
       std::condition_variable m_cv;
+      std::atomic_uint m_counter;
     };
-}
+
+  // --- Implementation ---
+  template <class T, class Container>
+  WaitableQueue<T, Container>::WaitableQueue() :
+    m_queue(), m_mutex(), m_cv(), m_counter(0) {}
+  
+  template <class T, class Container>
+  void WaitableQueue<T, Container>::Enqueue(T value) {
+    std::unique_lock<decltype(m_mutex)> lock(m_mutex);
+    m_queue.push(value);
+    ++m_counter;
+    m_cv.notify_one();
+  }
+
+  template <class T, class Container>
+  T WaitableQueue<T, Container>::Deque() {
+    std::unique_lock<decltype(m_mutex)> lock(m_mutex);
+    m_cv.wait(lock, [&]{ return m_counter; });
+    --m_counter;
+    
+    auto value = m_queue.front();
+    m_queue.pop();
+
+    return value;
+  }
+
+  template <class T, class Container>
+  bool WaitableQueue<T, Container>::Deque(std::chrono::milliseconds timeout,
+      T& outparam) {
+    std::unique_lock<decltype(m_mutex)> lock(m_mutex);
+
+    // Timeout
+    if (std::cv_status::timeout ==
+        m_cv.wait_for(lock, timeout, [&]{ return m_counter; })) {
+      return false;
+    }
+
+    // No timeout
+    --m_counter;
+    outparam = m_queue.front();
+    m_queue.pop();
+
+    return true;
+  }
+
+  template <class T, class Container>
+  bool WaitableQueue<T, Container>::IsEmpty() const {
+    std::unique_lock<decltype(m_mutex)> lock(m_mutex);
+    return m_counter;
+  }
+
+} // end namespace EK
