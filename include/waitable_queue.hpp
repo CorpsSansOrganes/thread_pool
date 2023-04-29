@@ -47,6 +47,7 @@ namespace EK {
        *
        * @return An item removed from the queue. 
        */
+
       T Deque();
 
       /**
