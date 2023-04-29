@@ -98,7 +98,7 @@ namespace EK {
   template <class T, class Container>
   T WaitableQueue<T, Container>::Deque() {
     std::unique_lock<decltype(m_mutex)> lock(m_mutex);
-    m_cv.wait(lock, [&]{ return m_counter; });
+    m_cv.wait(lock, [&]{ return m_counter > 0; });
     --m_counter;
     
     auto value = m_queue.front();
@@ -113,8 +113,7 @@ namespace EK {
     std::unique_lock<decltype(m_mutex)> lock(m_mutex);
 
     // Timeout
-    if (std::cv_status::timeout ==
-        m_cv.wait_for(lock, timeout, [&]{ return m_counter; })) {
+    if (!m_cv.wait_for(lock, timeout, [&]{ return m_counter > 0; })) {
       return false;
     }
 

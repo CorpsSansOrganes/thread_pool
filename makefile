@@ -1,6 +1,6 @@
 CC = g++
-CFLAGS := -std=c++11 -pedantic-errors -Wall -Wextra -DNDEBUG -O3
-DFLAGS := -std=c++11 -g -pedantic-errors -Wall -Wextra -O3
+CFLAGS := -std=c++11 -pedantic-errors -Wall -Wextra -DNDEBUG -O3 -pthread
+DFLAGS := -std=c++11 -g -pedantic-errors -Wall -Wextra -O3 -pthread
 INCLUDE := ./include
 RELEASE_TARGET := release.out
 DEBUG_TARGET := debug.out
@@ -30,6 +30,19 @@ obj/%.release.o: src/%.cpp
 
 obj/%.debug.o: src/%.cpp
 	$(CC) $(DFLAGS) -I$(INCLUDE) -c $< -o $@
+
+# Given a module name, checks if src/module.cpp and test/module_test.cpp exist.
+# If they do, compile them. Otherwise, try to compile only test/module_test.cpp if it exists.
+%:
+	@if test -f src/$@.cpp; then \
+		echo "Compiling module $@"; \
+		$(CC) $(CFLAGS) -I$(INCLUDE) src/$@.cpp test/$@_test.cpp -o $@.out; \
+	elif test -f test/$@_test.cpp; then \
+		echo "Compiling test $@_test"; \
+		$(CC) $(CFLAGS) -I$(INCLUDE) test/$@_test.cpp -o $@.out; \
+	else \
+		echo "Module $@ not found."; \
+	fi
 
 clean:
 	rm -rf $(RELEASE_TARGET) $(DEBUG_TARGET) obj/*.release.o obj/*.debug.o
