@@ -19,6 +19,9 @@ int main() {
   int status = 0;
   
   status += SmokeTest();
+  status += FailedTimeoutDeque();
+  status += SuccessfulTimeoutDeque();
+  status += OneProducerMultipleConsumers(5);
 
   if (0 == status) {
     std::cout << "SUCCESS: WaitableQueue" << std::endl;
@@ -76,14 +79,12 @@ static int SuccessfulTimeoutDeque() {
 
 static int OneProducerMultipleConsumers(int n) {
   // One producer, multiple consumers scenrio.
-  std::mutex mutex;
-  int sum = 0;
-  int expected_sum = 0;
-  
-  EK::WaitableQueue<int> waitable_queue;
   std::vector<std::thread> threads;
 
   // Create consumers & producer
+  EK::WaitableQueue<int> waitable_queue;
+  std::mutex mutex;
+  int sum = 0;
   for (int i = 0; i < n; ++i) {
     threads.emplace_back(std::thread(Consumer<int>, 
         std::ref(waitable_queue), std::ref(mutex), std::ref(sum)));
@@ -98,6 +99,7 @@ static int OneProducerMultipleConsumers(int n) {
     }
   }
 
+  int expected_sum = (n * (n - 1)) / 2;
   if (sum != expected_sum) {
     std::cout << "FAILED: OneProducerMultipleConsumers " << std::endl;
     std::cout << "Expected sum to be " << expected_sum <<
