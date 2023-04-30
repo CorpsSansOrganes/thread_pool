@@ -77,33 +77,33 @@ namespace EK {
       ~WaitableQueue() = default;
 
     private:
-      Container m_queue;
-      mutable std::mutex m_mutex;
-      std::condition_variable m_cv;
-      std::atomic_uint m_counter;
+      Container queue_;
+      mutable std::mutex mutex_;
+      std::condition_variable cv_;
+      std::atomic_uint counter_;
     };
 
   // --- Implementation ---
   template <class T, class Container>
   WaitableQueue<T, Container>::WaitableQueue() :
-    m_queue(), m_mutex(), m_cv(), m_counter(0) {}
+    queue_(), mutex_(), cv_(), counter_(0) {}
   
   template <class T, class Container>
   void WaitableQueue<T, Container>::Enqueue(T value) {
-    std::unique_lock<decltype(m_mutex)> lock(m_mutex);
-    m_queue.push(value);
-    ++m_counter;
-    m_cv.notify_one();
+    std::unique_lock<decltype(mutex_)> lock(mutex_);
+    queue_.push(value);
+    ++counter_;
+    cv_.notify_one();
   }
 
   template <class T, class Container>
   T WaitableQueue<T, Container>::Deque() {
-    std::unique_lock<decltype(m_mutex)> lock(m_mutex);
-    m_cv.wait(lock, [&]{ return m_counter > 0; });
-    --m_counter;
+    std::unique_lock<decltype(mutex_)> lock(mutex_);
+    cv_.wait(lock, [&]{ return counter_ > 0; });
+    --counter_;
     
-    auto value = m_queue.front();
-    m_queue.pop();
+    auto value = queue_.front();
+    queue_.pop();
 
     return value;
   }
@@ -111,25 +111,25 @@ namespace EK {
   template <class T, class Container>
   bool WaitableQueue<T, Container>::Deque(std::chrono::milliseconds timeout,
       T& outparam) {
-    std::unique_lock<decltype(m_mutex)> lock(m_mutex);
+    std::unique_lock<decltype(mutex_)> lock(mutex_);
 
     // Timeout
-    if (!m_cv.wait_for(lock, timeout, [&]{ return m_counter > 0; })) {
+    if (!cv_.wait_for(lock, timeout, [&]{ return counter_ > 0; })) {
       return false;
     }
 
     // No timeout
-    --m_counter;
-    outparam = m_queue.front();
-    m_queue.pop();
+    --counter_;
+    outparam = queue_.front();
+    queue_.pop();
 
     return true;
   }
 
   template <class T, class Container>
   bool WaitableQueue<T, Container>::IsEmpty() const {
-    std::unique_lock<decltype(m_mutex)> lock(m_mutex);
-    return m_counter;
+    std::unique_lock<decltype(mutex_)> lock(mutex_);
+    return counter_;
   }
 
 } // end namespace EK
