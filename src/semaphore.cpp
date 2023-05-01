@@ -1,4 +1,5 @@
 #include "semaphore.hpp" // EK::Semaphore
+#include <mutex>
 
 namespace EK {
   Semaphore::Semaphore(size_t initial_count) :
@@ -18,7 +19,6 @@ namespace EK {
 
   bool Semaphore::TryAcquireFor(std::chrono::milliseconds timeout) {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
-    
     bool no_timeout = cv_.wait_for(lock, timeout, [&] { return counter_ > 0; });
 
     if (no_timeout) {
@@ -27,5 +27,10 @@ namespace EK {
     } else {
       return false;
     }
+  }
+
+  size_t Semaphore::GetCount() {
+    std::unique_lock<decltype(mutex_)> lock(mutex_);
+    return counter_;
   }
 } // end namespace EK

@@ -1,6 +1,6 @@
-#include "waitable_queue.hpp" // EK::waitable_queue
+#include "waitable_queue.hpp" // EK::WaitableQueue
 
-#include <iostream>           // std::cout, std::endl
+#include <iostream>           // std::cerr, std::endl
 #include <thread>             // std::thread
 #include <vector>             // std::vector
 
@@ -23,8 +23,8 @@ int main() {
   status += SuccessfulTimeoutDeque();
   status += OneProducerMultipleConsumers(5);
 
-  if (0 == status) {
-    std::cout << "SUCCESS: WaitableQueue" << std::endl;
+  if (EXIT_SUCCESS == status) {
+    std::cerr << "SUCCESS: WaitableQueue" << std::endl;
   }
   return status;
 }
@@ -33,7 +33,7 @@ int main() {
 static int SmokeTest() {
   // Smoke test: if things don't crash and burn we're happy.
   EK::WaitableQueue<int> waitable_queue;
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 static int FailedTimeoutDeque() {
@@ -44,8 +44,8 @@ static int FailedTimeoutDeque() {
       waitable_queue.Deque(std::chrono::milliseconds(1), res));
 
   if (status) {
-    std::cout << "FAILED: FailedTimeoutDeque" << std::endl;
-    std::cout << "Expected Deque(timeout, outparam) to return false," << 
+    std::cerr << "FAILED: FailedTimeoutDeque" << std::endl;
+    std::cerr << "Expected Deque(timeout, outparam) to return false," << 
       " but true was returned instead." << std::endl;
   } 
 
@@ -62,14 +62,14 @@ static int SuccessfulTimeoutDeque() {
       waitable_queue.Deque(std::chrono::milliseconds(1), res));
 
   if (status) {
-    std::cout << "FAILED: SuccessfulTimeoutDeque" << std::endl;
-    std::cout << "Expected Deque(timeout, outparam) to return true," << 
+    std::cerr << "FAILED: SuccessfulTimeoutDeque" << std::endl;
+    std::cerr << "Expected Deque(timeout, outparam) to return true," << 
       " but false was returned instead." << std::endl;
   } 
 
   if (1234 != res) {
-    std::cout << "FAILED: SuccessfulTimeoutDeque" << std::endl;
-    std::cout << "Expected outparam to be equal 1234, but instead it is "
+    std::cerr << "FAILED: SuccessfulTimeoutDeque" << std::endl;
+    std::cerr << "Expected outparam to be equal 1234, but instead it is "
       << res << std::endl;
     ++status;
   }
@@ -101,13 +101,13 @@ static int OneProducerMultipleConsumers(int n) {
 
   int expected_sum = (n * (n - 1)) / 2;
   if (sum != expected_sum) {
-    std::cout << "FAILED: OneProducerMultipleConsumers " << std::endl;
-    std::cout << "Expected sum to be " << expected_sum <<
+    std::cerr << "FAILED: OneProducerMultipleConsumers " << std::endl;
+    std::cerr << "Expected sum to be " << expected_sum <<
       " but instead got " << sum << std::endl;
-    return 1;
+    return EXIT_FAILURE;
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 // Utilities

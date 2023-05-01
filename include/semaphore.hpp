@@ -60,6 +60,13 @@ namespace EK {
        */
       bool TryAcquireFor(std::chrono::milliseconds timeout);
 
+      /**
+       * @description Get current counter value
+       *
+       * @return the value of the counter, currently.
+       */
+      size_t GetCount();
+
       // Uncopyable
       Semaphore(const Semaphore&) = delete;
       Semaphore& operator=(const Semaphore&) = delete;
