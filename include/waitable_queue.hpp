@@ -6,7 +6,6 @@
  * @brief Thread-safe queue, allowing for multiple threads 
  * to insert new items, remove existing items or wait until a new
  * item becomes available to consume.
- *
  */
 
 #pragma once 
@@ -15,7 +14,6 @@
 #include <condition_variable> // std::condition_variable
 #include <chrono>             // std::chrono::milliseconds
 #include <queue>              // std::queue
-#include <atomic>             // std::atomic_uint
 
 namespace EK {
 
@@ -62,6 +60,13 @@ namespace EK {
       bool Deque(std::chrono::milliseconds timeout, T& outparam);
 
       /**
+       * @brief Get the number of elements currently in the queue.
+       *
+       * @return Number of elements in the queue.
+       */
+      size_t Size() const;
+
+      /**
        * @brief Indicates if the queue is empty.
        *
        * @return true if the queue is empty, false otherwise.
@@ -79,7 +84,7 @@ namespace EK {
       Container queue_;
       mutable std::mutex mutex_;
       std::condition_variable cv_;
-      std::atomic_uint counter_;
+      size_t counter_;
     };
 
   // --- Implementation ---
@@ -124,6 +129,12 @@ namespace EK {
 
   template <class T, class Container>
   bool WaitableQueue<T, Container>::IsEmpty() const {
+    std::unique_lock<decltype(mutex_)> lock(mutex_);
+    return counter_;
+  }
+
+  template <class T, class Container>
+  size_t WaitableQueue<T, Container>::Size() const {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
     return counter_;
   }
