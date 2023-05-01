@@ -24,11 +24,13 @@
                               
 #include <condition_variable> // std::condition_variable
 #include <exception>          // std::current_exception
+#include <memory>
 #include <thread>             // std::thread
 #include <cstddef>            // size_t
 #include <future>             // std::future
 #include <map>                // std::map
 #include <functional>         // std::bind
+#include <type_traits>        // std::result_of
 #include <utility>            // std::forward
 
 namespace EK {
@@ -64,7 +66,8 @@ namespace EK {
        */
       template <typename F, typename... Args>
       auto Submit(F&& task, Args&&... args) ->
-        std::future<decltype(task(std::forward<Args>(args)...))>;
+        std::future<typename std::result_of<F(Args...)>::type>;
+        //std::future<decltype(task(std::forward<Args>(args)...))>;
 
       /**
        * @brief Set the number of threads at runtime. 
@@ -106,40 +109,19 @@ namespace EK {
   // --- implementation ---
   template <typename F, typename... Args>
     auto ThreadPool::Submit(F&& task, Args&&... args) ->
-    std::future<decltype(task(std::forward<Args>(args)...))> {
+    std::future<typename std::result_of<F(Args...)>::type> {
 
       // Shorthand for return type of calling task with args.
-      using return_t = decltype(task(std::forward<Args>(args)...));
+      using return_t = typename std::result_of<F(Args...)>;
 
-      // Creating callable and promise
-      std::function<return_t()> task_function = std::bind(std::forward<F>(task),
-          std::forward<Args>(args)...);
-      auto task_promise = std::make_shared<std::promise<return_t>>();
+      // Wrapping the callable to be asynchronously invokable via std::packaged_task.
+      auto async_task = std::make_shared<std::packaged_task<return_t()>>(
+          std::bind(std::forward<F>(task), std::forward<Args>(args)...));
       
-
-      // Determine whether task(args...) returns or not, and add an appropriate
-      // task to the waitable queue.
-      if (std::is_void<return_t>::value) {
-        tasks_.Enqueue(
-            [task_function, task_promise] {
-              try {
-                task_function();
-                task_promise->set_value();
-              } catch (...) {
-                task_promise->set_exception(std::current_exception());
-              }
-            });
-      } else {
-        tasks_.Enqueue(
-            [task_function, task_promise] {
-              try {
-                task_promise->set_value(task_function());
-              } catch (...) {
-                task_promise->set_exception(std::current_exception());
-              }
-            });
-      }
-
-      return task_promise->get_future();
+      // Enqueue async_task itself to be executed by the thread pool.
+      tasks_.Enqueue([async_task]{ (*async_task)(); });
+      cv_new_task_.notify_one();
+      
+      return async_task->get_future();
     }
 } // end namespace EK
