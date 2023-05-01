@@ -29,7 +29,6 @@
 #include <future>             // std::future
 #include <map>                // std::map
 #include <functional>         // std::bind
-#include <type_traits>
 #include <utility>            // std::forward
 
 namespace EK {
