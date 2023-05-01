@@ -15,18 +15,22 @@
  * 1. Supporting asynchronous return values from tasks.
  * 2. Add or remove threads at runtime.
  * 3. Pause and unpause the thread pool.
- *
  */
 
 #pragma once
 
 #include "waitable_queue.hpp" // EK::WaitableQueue
-
+#include "semaphore.hpp"      // EK::Semaphore
+                              
 #include <condition_variable> // std::condition_variable
+#include <exception>          // std::current_exception
 #include <thread>             // std::thread
 #include <cstddef>            // size_t
 #include <future>             // std::future
 #include <map>                // std::map
+#include <functional>         // std::bind
+#include <type_traits>
+#include <utility>            // std::forward
 
 namespace EK {
   class ThreadPool {
@@ -99,4 +103,44 @@ namespace EK {
       [[nodiscard]] static size_t DetermineThreadCount(size_t thread_count);
       void CreateThreads();
   };
+
+  // --- implementation ---
+  template <typename F, typename... Args>
+    auto ThreadPool::Submit(F&& task, Args&&... args) ->
+    std::future<decltype(task(std::forward<Args>(args)...))> {
+
+      // Shorthand for return type of calling task with args.
+      using return_t = decltype(task(std::forward<Args>(args)...));
+
+      // Creating callable and promise
+      std::function<return_t()> task_function = std::bind(std::forward<F>(task),
+          std::forward<Args>(args)...);
+      auto task_promise = std::make_shared<std::promise<return_t>>();
+      
+
+      // Determine whether task(args...) returns or not, and add an appropriate
+      // task to the waitable queue.
+      if (std::is_void<return_t>::value) {
+        tasks_.Enqueue(
+            [task_function, task_promise] {
+              try {
+                task_function();
+                task_promise->set_value();
+              } catch (...) {
+                task_promise->set_exception(std::current_exception());
+              }
+            });
+      } else {
+        tasks_.Enqueue(
+            [task_function, task_promise] {
+              try {
+                task_promise->set_value(task_function());
+              } catch (...) {
+                task_promise->set_exception(std::current_exception());
+              }
+            });
+      }
+
+      return task_promise->get_future();
+    }
 } // end namespace EK

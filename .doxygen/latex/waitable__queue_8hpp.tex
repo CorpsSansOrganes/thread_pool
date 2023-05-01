@@ -1,0 +1,42 @@
+\hypertarget{waitable__queue_8hpp}{}\doxysection{include/waitable\+\_\+queue.hpp File Reference}
+\label{waitable__queue_8hpp}\index{include/waitable\_queue.hpp@{include/waitable\_queue.hpp}}
+
+
+Thread-\/safe queue, allowing for multiple threads to insert new items, remove existing items or wait until a new item becomes available to consume.  
+
+
+{\ttfamily \#include $<$mutex$>$}\newline
+{\ttfamily \#include $<$condition\+\_\+variable$>$}\newline
+{\ttfamily \#include $<$chrono$>$}\newline
+{\ttfamily \#include $<$queue$>$}\newline
+{\ttfamily \#include $<$atomic$>$}\newline
+Include dependency graph for waitable\+\_\+queue.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{waitable__queue_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=217pt]{waitable__queue_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classEK_1_1WaitableQueue}{E\+K\+::\+Waitable\+Queue$<$ T, Container $>$}}
+\begin{DoxyCompactList}\small\item\em Waitable, thread-\/safe queue class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Thread-\/safe queue, allowing for multiple threads to insert new items, remove existing items or wait until a new item becomes available to consume. 
+
+\begin{DoxyAuthor}{Author}
+Eden Kellner 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+29/04/2023 
+\end{DoxyDate}

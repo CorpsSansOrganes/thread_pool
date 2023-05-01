@@ -1,0 +1,119 @@
+\hypertarget{classEK_1_1WaitableQueue}{}\doxysection{EK\+::Waitable\+Queue$<$ T, Container $>$ Class Template Reference}
+\label{classEK_1_1WaitableQueue}\index{EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}}
+
+
+Waitable, thread-\/safe queue class.  
+
+
+
+
+{\ttfamily \#include $<$waitable\+\_\+queue.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classEK_1_1WaitableQueue_ab87036993ac35868a123f0ab142f808d}\label{classEK_1_1WaitableQueue_ab87036993ac35868a123f0ab142f808d}} 
+\mbox{\hyperlink{classEK_1_1WaitableQueue_ab87036993ac35868a123f0ab142f808d}{Waitable\+Queue}} ()
+\begin{DoxyCompactList}\small\item\em Construct a waitable queue. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classEK_1_1WaitableQueue_ac379120805aa12f77e318d2fd252f662}{Enqueue}} (T value)
+\begin{DoxyCompactList}\small\item\em Inserts a new item into the queue. \end{DoxyCompactList}\item 
+T \mbox{\hyperlink{classEK_1_1WaitableQueue_ac8d560a29438c30aa8b041d6c8e9238c}{Deque}} ()
+\begin{DoxyCompactList}\small\item\em Removes an item from the queue. The thread will be blocked, waiting until an item is available. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classEK_1_1WaitableQueue_a857974a38d825af654fc846e4e819a8a}{Deque}} (std\+::chrono\+::milliseconds timeout, T \&outparam)
+\begin{DoxyCompactList}\small\item\em Removes an item from the queue, with a timeout. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classEK_1_1WaitableQueue_a864dd7444293528fa2ccc1d8ed6e005e}{Is\+Empty}} () const
+\begin{DoxyCompactList}\small\item\em Indicates if the queue is empty. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classEK_1_1WaitableQueue_ad12c1a84925436af88040c053be47987}\label{classEK_1_1WaitableQueue_ad12c1a84925436af88040c053be47987}} 
+{\bfseries Waitable\+Queue} (const \mbox{\hyperlink{classEK_1_1WaitableQueue}{Waitable\+Queue}} \&)=delete
+\item 
+\mbox{\Hypertarget{classEK_1_1WaitableQueue_ac34419b043532a7cdeef86f6e4d5d7cb}\label{classEK_1_1WaitableQueue_ac34419b043532a7cdeef86f6e4d5d7cb}} 
+\mbox{\hyperlink{classEK_1_1WaitableQueue}{Waitable\+Queue}} \& {\bfseries operator=} (const \mbox{\hyperlink{classEK_1_1WaitableQueue}{Waitable\+Queue}} \&)=delete
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$class T, class Container = std\+::queue$<$\+T$>$$>$\newline
+class E\+K\+::\+Waitable\+Queue$<$ T, Container $>$}
+
+Waitable, thread-\/safe queue class. 
+
+
+\begin{DoxyTemplParams}{Template Parameters}
+{\em T} & is the value type which the container holds. \\
+\hline
+{\em Container} & is the container class used. Needs to support the following methods\+: push(), pop(), front(), empty(). \\
+\hline
+\end{DoxyTemplParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classEK_1_1WaitableQueue_ac8d560a29438c30aa8b041d6c8e9238c}\label{classEK_1_1WaitableQueue_ac8d560a29438c30aa8b041d6c8e9238c}} 
+\index{EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}!Deque@{Deque}}
+\index{Deque@{Deque}!EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}}
+\doxysubsubsection{\texorpdfstring{Deque()}{Deque()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class T , class Container $>$ \\
+T \mbox{\hyperlink{classEK_1_1WaitableQueue}{E\+K\+::\+Waitable\+Queue}}$<$ T, Container $>$\+::Deque}
+
+
+
+Removes an item from the queue. The thread will be blocked, waiting until an item is available. 
+
+\begin{DoxyReturn}{Returns}
+An item removed from the queue. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classEK_1_1WaitableQueue_a857974a38d825af654fc846e4e819a8a}\label{classEK_1_1WaitableQueue_a857974a38d825af654fc846e4e819a8a}} 
+\index{EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}!Deque@{Deque}}
+\index{Deque@{Deque}!EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}}
+\doxysubsubsection{\texorpdfstring{Deque()}{Deque()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class T , class Container $>$ \\
+bool \mbox{\hyperlink{classEK_1_1WaitableQueue}{E\+K\+::\+Waitable\+Queue}}$<$ T, Container $>$\+::Deque (\begin{DoxyParamCaption}\item[{std\+::chrono\+::milliseconds}]{timeout,  }\item[{T \&}]{outparam }\end{DoxyParamCaption})}
+
+
+
+Removes an item from the queue, with a timeout. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em timeout} & dictates how much time a thread will wait for an item to become available. After timeout milliseconds the function will return. \\
+\hline
+{\em outparam} & used to return the item acquired.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if an item has been acquired, and False otherwise. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classEK_1_1WaitableQueue_ac379120805aa12f77e318d2fd252f662}\label{classEK_1_1WaitableQueue_ac379120805aa12f77e318d2fd252f662}} 
+\index{EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}!Enqueue@{Enqueue}}
+\index{Enqueue@{Enqueue}!EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}}
+\doxysubsubsection{\texorpdfstring{Enqueue()}{Enqueue()}}
+{\footnotesize\ttfamily template$<$class T , class Container $>$ \\
+void \mbox{\hyperlink{classEK_1_1WaitableQueue}{E\+K\+::\+Waitable\+Queue}}$<$ T, Container $>$\+::Enqueue (\begin{DoxyParamCaption}\item[{T}]{value }\end{DoxyParamCaption})}
+
+
+
+Inserts a new item into the queue. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & -\/ the item we wish to insert. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classEK_1_1WaitableQueue_a864dd7444293528fa2ccc1d8ed6e005e}\label{classEK_1_1WaitableQueue_a864dd7444293528fa2ccc1d8ed6e005e}} 
+\index{EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}!IsEmpty@{IsEmpty}}
+\index{IsEmpty@{IsEmpty}!EK::WaitableQueue$<$ T, Container $>$@{EK::WaitableQueue$<$ T, Container $>$}}
+\doxysubsubsection{\texorpdfstring{IsEmpty()}{IsEmpty()}}
+{\footnotesize\ttfamily template$<$class T , class Container $>$ \\
+bool \mbox{\hyperlink{classEK_1_1WaitableQueue}{E\+K\+::\+Waitable\+Queue}}$<$ T, Container $>$\+::Is\+Empty}
+
+
+
+Indicates if the queue is empty. 
+
+\begin{DoxyReturn}{Returns}
+true if the queue is empty, false otherwise. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{waitable__queue_8hpp}{waitable\+\_\+queue.\+hpp}}\end{DoxyCompactItemize}
