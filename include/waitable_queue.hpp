@@ -113,17 +113,16 @@ namespace EK {
       T& outparam) {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
 
-    // Timeout
-    if (!cv_.wait_for(lock, timeout, [&]{ return counter_ > 0; })) {
+    auto no_timeout = cv_.wait_for(lock, timeout, [&]{ return counter_ > 0; });
+
+    if (no_timeout) {
+      --counter_;
+      outparam = queue_.front();
+      queue_.pop();
+      return true;
+    } else {
       return false;
     }
-
-    // No timeout
-    --counter_;
-    outparam = queue_.front();
-    queue_.pop();
-
-    return true;
   }
 
   template <class T, class Container>
