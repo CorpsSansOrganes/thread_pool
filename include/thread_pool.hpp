@@ -1,7 +1,9 @@
 /**
- * @file: thread_pool.hpp 
+ * @file thread_pool.hpp 
+ * @author Eden Kellner
+ * @date 29/04/2023
  *
- * @description: Thread Pool is a design pattern offering an API
+ * Thread Pool is a design pattern offering an API
  * for distributing tasks among a group of worker threads.
  * It is used to simplify performing tasks concurrently.
  *
@@ -14,7 +16,6 @@
  * 2. Add or remove threads at runtime.
  * 3. Pause and unpause the thread pool.
  *
- * @author: Eden Kellner, 29/04/2023.
  *
  */
 #pragma once
@@ -31,7 +32,7 @@ namespace EK {
   class ThreadPool {
     public:
       /**
-       * @description Constructs a new thread pool. By default the number of threads
+       * @brief Constructs a new thread pool. By default the number of threads
        * created is the total number of hardware threads avaiable.
        *
        * @param totalThreadCount determines how many worker threads will be 
@@ -40,13 +41,13 @@ namespace EK {
       ThreadPool(size_t thread_count = DetermineThreadCount(0));
 
       /**
-       * @description Destructs the thread pool.
+       * @brief Destructs the thread pool.
        * Waiting for all tasks to complete before deallocating resources.
        */
       ~ThreadPool();
 
       /**
-       * @description Submit a new task to be executed by the thread pool.
+       * @brief Submit a new task to be executed by the thread pool.
        * The task can be any callable object (function, lambda etc).
        *
        * @tparam F The callable type (e.g. std::function<int()>).
@@ -63,7 +64,7 @@ namespace EK {
         std::future<decltype(task(std::forward<Args>(args)...))>;
 
       /**
-       * @description Set the number of threads at runtime. 
+       * @brief Set the number of threads at runtime. 
        * Additional threads can be added, or threads can be removed.
        *
        * @param num_threads The number of worker threads the thread pool 
@@ -72,13 +73,13 @@ namespace EK {
       void SetThreadNum(std::size_t num_threads);
 
       /**
-       * @description Pauses any additional tasks from executing.
+       * @brief Pauses any additional tasks from executing.
        * Tasks that are currently executed won't be passed.
        */
       void Pause();
 
       /**
-       * @description Resumes task execution after being pauses.
+       * @brief Resumes task execution after being pauses.
        */
       void Resume();
       

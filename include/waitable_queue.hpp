@@ -1,11 +1,11 @@
 /**
- * @file: waitable_queue.hpp 
+ * @file waitable_queue.hpp 
+ * @author Eden Kellner
+ * @date 29/04/2023
  *
- * @description: Thread-safe queue, allowing for multiple threads 
+ * @brief Thread-safe queue, allowing for multiple threads 
  * to insert new items, remove existing items or wait until a new
  * item becomes available to consume.
- *
- * @author: Eden Kellner, 29/04/2023.
  *
  */
 
@@ -20,7 +20,7 @@
 namespace EK {
 
   /**
-   * @description: Waitable, thread-safe queue class.
+   * @brief Waitable, thread-safe queue class.
    *
    * @paramt T is the value type which the container holds.
    * @paramt Container is the container class used. Needs to support the 
@@ -30,19 +30,19 @@ namespace EK {
   class WaitableQueue {
     public:
       /**
-       * @description: Construct a waitable queue.
+       * @brief Construct a waitable queue.
        */
       WaitableQueue();
 
       /**
-       * @description: Inserts a new item into the queue.
+       * @brief Inserts a new item into the queue.
        *
        * @param value - the item we wish to insert.
        */
       void Enqueue(T value);
 
       /**
-       * @description: Removes an item from the queue.
+       * @brief Removes an item from the queue.
        * The thread will be blocked, waiting until an item is available.
        *
        * @return An item removed from the queue. 
@@ -51,11 +51,10 @@ namespace EK {
       T Deque();
 
       /**
-       * @description: Removes an item from the queue, with a timeout.
+       * @brief Removes an item from the queue, with a timeout.
        *
        * @param timeout dictates how much time a thread will wait for an item to
        * become available. After timeout milliseconds the function will return.
-       *
        * @param outparam used to return the item acquired.
        *
        * @return True if an item has been acquired, and False otherwise.
@@ -63,7 +62,7 @@ namespace EK {
       bool Deque(std::chrono::milliseconds timeout, T& outparam);
 
       /**
-       * @description: Indicates if the queue is empty.
+       * @brief Indicates if the queue is empty.
        *
        * @return true if the queue is empty, false otherwise.
        */
@@ -104,7 +103,6 @@ namespace EK {
     
     auto value = queue_.front();
     queue_.pop();
-
     return value;
   }
 
@@ -112,7 +110,6 @@ namespace EK {
   bool WaitableQueue<T, Container>::Deque(std::chrono::milliseconds timeout,
       T& outparam) {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
-
     auto no_timeout = cv_.wait_for(lock, timeout, [&]{ return counter_ > 0; });
 
     if (no_timeout) {
@@ -130,5 +127,4 @@ namespace EK {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
     return counter_;
   }
-
 } // end namespace EK

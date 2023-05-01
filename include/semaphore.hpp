@@ -1,8 +1,9 @@
 /**
- * @file: semaphore.hpp 
+ * @file semaphore.hpp 
+ * @author Eden Kellner
+ * @date 01/05/2023
  *
- * @description: C++11-compatible semaphore implementation.
- *
+ * C++11-compatible semaphore implementation.
  * Semaphore is a signalling device, used for synchronisation between
  * threads, as it restricts access to critical code sections until a signal 
  * is received.
@@ -12,8 +13,6 @@
  * 1. If the counter is positive, it decrements it and passes.
  * 2. If the counter is zero, the thread will be blocked until the semaphore is 
  *    incremented by another thread.
- *
- * @author: Eden Kellner, 01/05/2023.
  *
  */
 
@@ -26,12 +25,12 @@
 namespace EK {
 
   /**
-   * @description: C++11-compatible semaphore.
+   * @brief C++11-compatible semaphore.
    */
   class Semaphore {
     public:
       /**
-       * @description Construct a sempahore.
+       * @brief Construct a sempahore.
        *
        * @param initial_count The value the semaphore's counter 
        * should be initialised with.
@@ -39,18 +38,18 @@ namespace EK {
       explicit Semaphore(size_t initial_count = 0);
 
       /**
-       * @description Increment the counter and signal waiting threads.
+       * @brief Increment the counter and signal waiting threads.
        */
       void Release();
 
       /**
-       * @description If the counter is positive, decrement it and pass.
+       * @brief If the counter is positive, decrement it and pass.
        * Otherwise, wait until the sempahore is released by another thread.
        */
       void Acquire();
 
       /**
-       * @description If the counter is positive, decrement it and pass.
+       * @brief If the counter is positive, decrement it and pass.
        * Otherwise, wait until the semaphore is released by another thread 
        * or until timeout duration has been exceeded.
        *
@@ -61,7 +60,7 @@ namespace EK {
       bool TryAcquireFor(std::chrono::milliseconds timeout);
 
       /**
-       * @description Get current counter value
+       * @brief Get current counter value
        *
        * @return the value of the counter, currently.
        */
