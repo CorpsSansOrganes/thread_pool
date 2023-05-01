@@ -1,0 +1,98 @@
+\hypertarget{classEK_1_1Semaphore}{}\doxysection{EK\+::Semaphore Class Reference}
+\label{classEK_1_1Semaphore}\index{EK::Semaphore@{EK::Semaphore}}
+
+
+C++11-\/compatible semaphore.  
+
+
+
+
+{\ttfamily \#include $<$semaphore.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classEK_1_1Semaphore_a4bef5065821e5274b3647b399472bf67}{Semaphore}} (size\+\_\+t initial\+\_\+count=0)
+\begin{DoxyCompactList}\small\item\em Construct a sempahore. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classEK_1_1Semaphore_a1cfd287e1df02bf8d4087698c5086426}\label{classEK_1_1Semaphore_a1cfd287e1df02bf8d4087698c5086426}} 
+void \mbox{\hyperlink{classEK_1_1Semaphore_a1cfd287e1df02bf8d4087698c5086426}{Release}} ()
+\begin{DoxyCompactList}\small\item\em Increment the counter and signal waiting threads. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classEK_1_1Semaphore_a065e0ef960cc91eff49b9238bbeedb6d}\label{classEK_1_1Semaphore_a065e0ef960cc91eff49b9238bbeedb6d}} 
+void \mbox{\hyperlink{classEK_1_1Semaphore_a065e0ef960cc91eff49b9238bbeedb6d}{Acquire}} ()
+\begin{DoxyCompactList}\small\item\em If the counter is positive, decrement it and pass. Otherwise, wait until the sempahore is released by another thread. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classEK_1_1Semaphore_a27367f3f9ca47d9841a59ddacd6bbe1a}{Try\+Acquire\+For}} (std\+::chrono\+::milliseconds timeout)
+\begin{DoxyCompactList}\small\item\em If the counter is positive, decrement it and pass. Otherwise, wait until the semaphore is released by another thread or until timeout duration has been exceeded. \end{DoxyCompactList}\item 
+size\+\_\+t \mbox{\hyperlink{classEK_1_1Semaphore_a53055cf7f44124904a2a0f91eba98a5d}{Get\+Count}} ()
+\begin{DoxyCompactList}\small\item\em Get current counter value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classEK_1_1Semaphore_a833817bc7ca657a3e6be6afc5525e760}\label{classEK_1_1Semaphore_a833817bc7ca657a3e6be6afc5525e760}} 
+{\bfseries Semaphore} (const \mbox{\hyperlink{classEK_1_1Semaphore}{Semaphore}} \&)=delete
+\item 
+\mbox{\Hypertarget{classEK_1_1Semaphore_a3b759512d66c8f8b4b4fb694966cb569}\label{classEK_1_1Semaphore_a3b759512d66c8f8b4b4fb694966cb569}} 
+\mbox{\hyperlink{classEK_1_1Semaphore}{Semaphore}} \& {\bfseries operator=} (const \mbox{\hyperlink{classEK_1_1Semaphore}{Semaphore}} \&)=delete
+\item 
+\mbox{\Hypertarget{classEK_1_1Semaphore_aba4c524d7d2e86261e4e2c749352a8d8}\label{classEK_1_1Semaphore_aba4c524d7d2e86261e4e2c749352a8d8}} 
+{\bfseries Semaphore} (\mbox{\hyperlink{classEK_1_1Semaphore}{Semaphore}} \&\&)=delete
+\item 
+\mbox{\Hypertarget{classEK_1_1Semaphore_ae0c206aec2c4fc3d39926ed85b0181ea}\label{classEK_1_1Semaphore_ae0c206aec2c4fc3d39926ed85b0181ea}} 
+\mbox{\hyperlink{classEK_1_1Semaphore}{Semaphore}} \& {\bfseries operator=} (\mbox{\hyperlink{classEK_1_1Semaphore}{Semaphore}} \&\&)=delete
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+C++11-\/compatible semaphore. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classEK_1_1Semaphore_a4bef5065821e5274b3647b399472bf67}\label{classEK_1_1Semaphore_a4bef5065821e5274b3647b399472bf67}} 
+\index{EK::Semaphore@{EK::Semaphore}!Semaphore@{Semaphore}}
+\index{Semaphore@{Semaphore}!EK::Semaphore@{EK::Semaphore}}
+\doxysubsubsection{\texorpdfstring{Semaphore()}{Semaphore()}}
+{\footnotesize\ttfamily E\+K\+::\+Semaphore\+::\+Semaphore (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{initial\+\_\+count = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+Construct a sempahore. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em initial\+\_\+count} & The value the semaphore\textquotesingle{}s counter should be initialised with. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classEK_1_1Semaphore_a53055cf7f44124904a2a0f91eba98a5d}\label{classEK_1_1Semaphore_a53055cf7f44124904a2a0f91eba98a5d}} 
+\index{EK::Semaphore@{EK::Semaphore}!GetCount@{GetCount}}
+\index{GetCount@{GetCount}!EK::Semaphore@{EK::Semaphore}}
+\doxysubsubsection{\texorpdfstring{GetCount()}{GetCount()}}
+{\footnotesize\ttfamily size\+\_\+t E\+K\+::\+Semaphore\+::\+Get\+Count (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Get current counter value. 
+
+\begin{DoxyReturn}{Returns}
+the value of the counter, currently. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classEK_1_1Semaphore_a27367f3f9ca47d9841a59ddacd6bbe1a}\label{classEK_1_1Semaphore_a27367f3f9ca47d9841a59ddacd6bbe1a}} 
+\index{EK::Semaphore@{EK::Semaphore}!TryAcquireFor@{TryAcquireFor}}
+\index{TryAcquireFor@{TryAcquireFor}!EK::Semaphore@{EK::Semaphore}}
+\doxysubsubsection{\texorpdfstring{TryAcquireFor()}{TryAcquireFor()}}
+{\footnotesize\ttfamily bool E\+K\+::\+Semaphore\+::\+Try\+Acquire\+For (\begin{DoxyParamCaption}\item[{std\+::chrono\+::milliseconds}]{timeout }\end{DoxyParamCaption})}
+
+
+
+If the counter is positive, decrement it and pass. Otherwise, wait until the semaphore is released by another thread or until timeout duration has been exceeded. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em timeout} & The maximum duration a thread will wait on the semaphore.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if decremented the counter, otherwise, if exceeded timeout, false. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/\mbox{\hyperlink{semaphore_8hpp}{semaphore.\+hpp}}\end{DoxyCompactItemize}

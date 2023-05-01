@@ -3,7 +3,7 @@
  * @author Eden Kellner
  * @date 29/04/2023
  *
- * Thread Pool is a design pattern offering an API
+ * @brief Thread Pool is a design pattern offering an API
  * for distributing tasks among a group of worker threads.
  * It is used to simplify performing tasks concurrently.
  *
@@ -16,8 +16,8 @@
  * 2. Add or remove threads at runtime.
  * 3. Pause and unpause the thread pool.
  *
- *
  */
+
 #pragma once
 
 #include "waitable_queue.hpp" // EK::WaitableQueue
@@ -35,7 +35,7 @@ namespace EK {
        * @brief Constructs a new thread pool. By default the number of threads
        * created is the total number of hardware threads avaiable.
        *
-       * @param totalThreadCount determines how many worker threads will be 
+       * @param thread_count determines how many worker threads will be 
        * created initially.
        */
       ThreadPool(size_t thread_count = DetermineThreadCount(0));

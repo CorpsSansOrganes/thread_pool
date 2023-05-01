@@ -22,8 +22,8 @@ namespace EK {
   /**
    * @brief Waitable, thread-safe queue class.
    *
-   * @paramt T is the value type which the container holds.
-   * @paramt Container is the container class used. Needs to support the 
+   * @tparam T is the value type which the container holds.
+   * @tparam Container is the container class used. Needs to support the 
    * following methods: push(), pop(), front(), empty().
    */
   template <class T, class Container = std::queue<T>>

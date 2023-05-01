@@ -3,11 +3,10 @@
  * @author Eden Kellner
  * @date 01/05/2023
  *
- * C++11-compatible semaphore implementation.
+ * @brief C++11-compatible semaphore implementation.
  * Semaphore is a signalling device, used for synchronisation between
  * threads, as it restricts access to critical code sections until a signal 
  * is received.
- *
  * The centre piece of a semaphore is a counter.
  * When a thread wants to pass the semaphore, it checks the counter.
  * 1. If the counter is positive, it decrements it and passes.

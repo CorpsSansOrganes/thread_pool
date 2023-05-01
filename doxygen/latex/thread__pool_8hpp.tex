@@ -1,0 +1,44 @@
+\hypertarget{thread__pool_8hpp}{}\doxysection{include/thread\+\_\+pool.hpp File Reference}
+\label{thread__pool_8hpp}\index{include/thread\_pool.hpp@{include/thread\_pool.hpp}}
+
+
+Thread Pool is a design pattern offering an A\+PI for distributing tasks among a group of worker threads. It is used to simplify performing tasks concurrently.  
+
+
+{\ttfamily \#include \char`\"{}waitable\+\_\+queue.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$condition\+\_\+variable$>$}\newline
+{\ttfamily \#include $<$thread$>$}\newline
+{\ttfamily \#include $<$cstddef$>$}\newline
+{\ttfamily \#include $<$future$>$}\newline
+{\ttfamily \#include $<$map$>$}\newline
+Include dependency graph for thread\+\_\+pool.\+hpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{thread__pool_8hpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classEK_1_1ThreadPool}{E\+K\+::\+Thread\+Pool}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Thread Pool is a design pattern offering an A\+PI for distributing tasks among a group of worker threads. It is used to simplify performing tasks concurrently. 
+
+\begin{DoxyAuthor}{Author}
+Eden Kellner 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+29/04/2023
+\end{DoxyDate}
+By providing a dedicated object for multithreaded operations, it reduces the overhead cost of creating and destorying threads. It also alleviates the headace of managing synchronisation between threads.
+
+Additional features of this implementation\+:
+\begin{DoxyEnumerate}
+\item Supporting asynchronous return values from tasks.
+\item Add or remove threads at runtime.
+\item Pause and unpause the thread pool. 
+\end{DoxyEnumerate}
