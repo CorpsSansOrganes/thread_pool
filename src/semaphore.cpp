@@ -1,5 +1,4 @@
 #include "semaphore.hpp" // EK::Semaphore
-#include <mutex>
 
 namespace EK {
   Semaphore::Semaphore(size_t initial_count) :
