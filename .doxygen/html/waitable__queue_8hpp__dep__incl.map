@@ -1,4 +1,0 @@
-<map id="include/waitable_queue.hpp" name="include/waitable_queue.hpp">
-<area shape="rect" id="node1" title="Thread&#45;safe queue, allowing for multiple threads to insert new items, remove existing items or wait u..." alt="" coords="5,5,188,32"/>
-<area shape="rect" id="node2" href="$thread__pool_8hpp.html" title="Thread Pool is a design pattern offering an API for distributing tasks among a group of worker thread..." alt="" coords="17,80,176,107"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="include/waitable_queue.hpp" name="include/waitable_queue.hpp">
-<area shape="rect" id="node1" title="Thread&#45;safe queue, allowing for multiple threads to insert new items, remove existing items or wait u..." alt="" coords="179,5,362,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,80,64,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="89,80,215,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="240,80,301,107"/>
-<area shape="rect" id="node5" title=" " alt="" coords="326,80,383,107"/>
-<area shape="rect" id="node6" title=" " alt="" coords="408,80,469,107"/>
-</map>
