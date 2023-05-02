@@ -1,5 +1,6 @@
 #include "waitable_queue.hpp" // EK::WaitableQueue
 
+#include <cstdlib>            // EXIT_FAILURE, EXIT_SUCCESS
 #include <iostream>           // std::cerr, std::endl
 #include <thread>             // std::thread
 #include <vector>             // std::vector
@@ -8,6 +9,8 @@ static int SmokeTest();
 static int FailedTimeoutDeque();
 static int SuccessfulTimeoutDeque();
 static int OneProducerMultipleConsumers(int n);
+static int EmptyTest();
+static int SizeTest();
 
 template<typename T>
 static void Producer(EK::WaitableQueue<T> &waitable_queue, int n);
@@ -22,6 +25,8 @@ int main() {
   status += FailedTimeoutDeque();
   status += SuccessfulTimeoutDeque();
   status += OneProducerMultipleConsumers(5);
+  status += EmptyTest();
+  status += SizeTest();
 
   if (EXIT_SUCCESS == status) {
     std::cerr << "SUCCESS: WaitableQueue" << std::endl;
@@ -36,6 +41,59 @@ static int SmokeTest() {
   return EXIT_SUCCESS;
 }
 
+static int EmptyTest() {
+  int status = 0;
+  EK::WaitableQueue<int> waitable_queue;
+  if (true != waitable_queue.IsEmpty()) {
+    std::cout << "ERROR: EmptyTest" << std::endl;
+    std::cout << "IsEmpty() for newly created waitable queue retuned false!" << std::endl;
+    status += EXIT_FAILURE;
+  }
+
+  waitable_queue.Enqueue(1);
+  if (false != waitable_queue.IsEmpty()) {
+    std::cout << "ERROR: EmptyTest" << std::endl;
+    std::cout << "IsEmpty() for queue with 1 element retuned true!" << std::endl;
+    status += EXIT_FAILURE;
+  }
+
+  waitable_queue.Deque();
+  if (true != waitable_queue.IsEmpty()) {
+    std::cout << "ERROR: EmptyTest" << std::endl;
+    std::cout << "IsEmpty() for queue that's been emptied retuned false!" << std::endl;
+    status += EXIT_FAILURE;
+  }
+
+  return status;
+}
+
+static int SizeTest() {
+  int status = 0;
+  EK::WaitableQueue<int> waitable_queue;
+  if (0 != waitable_queue.Size()) {
+    std::cout << "ERROR: SizeTest" << std::endl;
+    std::cout << "Size() for newly created waitable queue retuned " 
+      << waitable_queue.Size() << std::endl;
+    status += EXIT_FAILURE;
+  }
+
+  waitable_queue.Enqueue(1);
+  if (1 != waitable_queue.Size()) {
+    std::cout << "ERROR: SizeTest" << std::endl;
+    std::cout << "Size() for queue with 1 element retuned " << waitable_queue.Size() << std::endl;
+    status += EXIT_FAILURE;
+  }
+
+  waitable_queue.Deque();
+  if (0 != waitable_queue.Size()) {
+    std::cout << "ERROR: SizeTest" << std::endl;
+    std::cout << "Size() for queue that's been emptied retuned " 
+      << waitable_queue.Size() << std::endl;
+    status += EXIT_FAILURE;
+  }
+
+  return status;
+}
 static int FailedTimeoutDeque() {
   // Attempting to deque from the waitable queue and failing.
   EK::WaitableQueue<int> waitable_queue;

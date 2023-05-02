@@ -130,7 +130,7 @@ namespace EK {
   template <class T, class Container>
   bool WaitableQueue<T, Container>::IsEmpty() const {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
-    return counter_;
+    return (0 == counter_);
   }
 
   template <class T, class Container>
