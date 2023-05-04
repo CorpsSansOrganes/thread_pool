@@ -2,10 +2,12 @@
 
 #include <cstdlib>         // EXIT_FAILURE, EXIT_SUCCESS
 #include <iostream>        // std::cerr, std::endl
+#include <mutex>           // std::mutex, std::unique_lock
 #include <string>          // std::string
 
 static int SmokeTest();
 static int BasicUsageTest();
+static int WaitForTasksTest();
 static int PerfectForwardingTest();
 
 static int CheckPerfectForwarding(std::string&& s);
@@ -77,11 +79,61 @@ static int BasicUsageTest() {
     return EXIT_FAILURE;
   }
 
-  // Simply call a function without any lambdas
+  // Sumbit a function 
   auto res5 = tp.Submit(ReturnArg, 0);
   if(0 != res5.get()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
     std::cerr << "Expected function to return 0, but instead got " << res5.get() << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // Submit a functor
+  class Functor {
+  public:
+    Functor() : was_called_(false)
+      {}
+    void operator()() const {
+      was_called_ = true;
+    }
+    bool WasCalled() const {
+      return was_called_;
+    }
+
+  private:
+    mutable bool was_called_;
+  };
+
+  auto func = Functor();
+  auto res6 = tp.Submit(func);
+  res6.wait();
+  if (true != func.WasCalled()) {
+    std::cerr << "ERROR: BasicUsageTest" << std::endl;
+    std::cerr << "Functor wasn't called! expected was_called_ to be true." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  return EXIT_SUCCESS;
+}
+
+static int WaitForTasksTest() {
+  // Run 500 tasks. Make sure all tasks got executed before
+  // the dtor was called.
+  size_t num = 0;
+  {
+    std::mutex mutex;
+    EK::ThreadPool tp;
+    for (int i = 0; i < 500; ++i) {
+      tp.Submit([&mutex, &num] { 
+          std::unique_lock<std::mutex> lock (mutex);
+          ++num;
+          });
+    }
+  }
+
+  if (500 != num) {
+    std::cerr << "ERROR! WaitForTasksTest" << std::endl;
+    std::cerr << "Expected num to be 500, instead got " << num << std::endl;
+    std::cerr << "Thread pool was destructed before all tasks finished executing" << std::endl;
     return EXIT_FAILURE;
   }
 
