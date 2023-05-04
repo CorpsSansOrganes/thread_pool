@@ -1,4 +1,6 @@
 #include "thread_pool.hpp" // EK::ThreadPool
+#include <mutex>
+#include <thread>
 
 namespace EK {
   /**-----------------*
@@ -44,8 +46,33 @@ namespace EK {
     is_paused_ = false;
   }
 
-  /**-----------------*
+  /**------------------*
    * PRIVATE FUNCTIONS *
-   *------------------*/
+   *-------------------*/
+
+  void ThreadPool::CreateThreads(size_t thread_count) {
+    for (int i = 0; i < thread_count; ++i) {
+      auto new_thread = std::thread(&ThreadPool::ServeTasks, this);
+      threads_.emplace(new_thread.get_id(), new_thread);
+    }
+  }
+
+  void ThreadPool::ServeTasks() {
+    auto id = std::this_thread::get_id();
+
+    {
+      std::unique_lock<decltype(mutex_)> lock(mutex_);
+      should_run_[id] = true;
+    }
+
+    // Serve tasks
+    while (should_run_[id]) {
+      auto task = tasks_.Deque();
+      task();
+    }
+
+    // When terminating, add oneself to the joinable threads queue.
+    joinable_threads_.Enqueue(id);
+  }
 
 } // end namespace EK
