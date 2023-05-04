@@ -12,7 +12,6 @@
  * 1. If the counter is positive, it decrements it and passes.
  * 2. If the counter is zero, the thread will be blocked until the semaphore is 
  *    incremented by another thread.
- *
  */
 
 #pragma once 
@@ -40,6 +39,13 @@ namespace EK {
        * @brief Increment the counter and signal waiting threads.
        */
       void Release();
+
+      /**
+       * @brief Increase the counter by a specific value, and signal waiting threads.
+       *
+       * @param n Number by which the counter should be increased.
+       */
+      void Release(size_t n);
 
       /**
        * @brief If the counter is positive, decrement it and pass.

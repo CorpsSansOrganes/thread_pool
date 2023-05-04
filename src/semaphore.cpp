@@ -1,4 +1,5 @@
 #include "semaphore.hpp" // EK::Semaphore
+#include <mutex>
 
 namespace EK {
   Semaphore::Semaphore(size_t initial_count) :
@@ -8,6 +9,12 @@ namespace EK {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
     ++counter_;
     cv_.notify_one();
+  }
+
+  void Semaphore::Release(size_t n) {
+    std::unique_lock<decltype(mutex_)> lock(mutex_);
+    counter_ += n;
+    cv_.notify_all();
   }
 
   void Semaphore::Acquire() {
