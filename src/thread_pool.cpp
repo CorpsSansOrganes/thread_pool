@@ -57,6 +57,18 @@ namespace EK {
     }
   }
 
+  static size_t DetermineThreadCount(size_t thread_count) {
+    // User specified number of threads.
+    if (thread_count > 0) {
+      return thread_count;
+    }
+
+    // Default: total number of hardware threads available.
+    // If unable to detect, return 1.
+    thread_count = std::thread::hardware_concurrency();
+    return thread_count ? thread_count : 1;
+  }
+
   void ThreadPool::ServeTasks() {
     auto id = std::this_thread::get_id();
 
