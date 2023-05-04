@@ -24,7 +24,6 @@
                               
 #include <condition_variable> // std::condition_variable
 #include <exception>          // std::current_exception
-#include <memory>
 #include <thread>             // std::thread
 #include <cstddef>            // size_t
 #include <future>             // std::future
@@ -43,7 +42,7 @@ namespace EK {
        * @param thread_count determines how many worker threads will be 
        * created initially.
        */
-      ThreadPool(size_t thread_count = DetermineThreadCount(0));
+      ThreadPool(size_t thread_count = 0);
 
       /**
        * @brief Destructs the thread pool.
@@ -82,12 +81,12 @@ namespace EK {
        * @brief Pauses any additional tasks from executing.
        * Tasks that are currently executed won't be passed.
        */
-      void Pause();
+      void Pause() const;
 
       /**
        * @brief Resumes task execution after being pauses.
        */
-      void Resume();
+      void Resume() const;
       
       // Uncopyable
       ThreadPool(const ThreadPool&) = delete;
@@ -96,14 +95,12 @@ namespace EK {
     private:
       size_t thread_count_;
       std::map<std::thread::id, bool> threads_;
-      WaitableQueue<std::thread::id> joinable_threads_;
       WaitableQueue<std::function<void()>> tasks_;
-      std::mutex tasks_mutex_;
-      std::condition_variable cv_new_task_;
-      size_t tasks_available_;
+      WaitableQueue<std::thread::id> joinable_threads_;
 
       [[nodiscard]] static size_t DetermineThreadCount(size_t thread_count);
-      void CreateThreads();
+      void CreateThreads(size_t thread_count);
+      void WaitForTasks();
   };
 
   // --- implementation ---
@@ -120,7 +117,6 @@ namespace EK {
       
       // Enqueue async_task itself to be executed by the thread pool.
       tasks_.Enqueue([async_task]{ (*async_task)(); });
-      cv_new_task_.notify_one();
       
       return async_task->get_future();
     }
