@@ -101,6 +101,7 @@ namespace EK {
       std::mutex mutex_;
       mutable bool is_paused_;
       mutable Semaphore pause_sem_;
+      std::condition_variable waiting_cv_;
 
       [[nodiscard]] static size_t DetermineThreadCount(size_t thread_count);
       void CreateThreads(size_t thread_count);

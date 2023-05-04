@@ -80,11 +80,17 @@ namespace EK {
     // Serve tasks
     while (should_run_[id]) {
       auto task = tasks_.Deque();
+      waiting_cv_.notify_one();
       task();
     }
 
     // When terminating, add oneself to the joinable threads queue.
     joinable_threads_.Enqueue(id);
+  }
+
+  void ThreadPool::WaitForTasks() {
+    std::unique_lock<decltype(mutex_)> lock(mutex_);
+    waiting_cv_.wait(lock, [this] { return tasks_.IsEmpty(); });
   }
 
 } // end namespace EK
