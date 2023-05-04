@@ -81,12 +81,12 @@ namespace EK {
        * @brief Pauses any additional tasks from executing.
        * Tasks that are currently executed won't be passed.
        */
-      void Pause() const;
+      void Pause();
 
       /**
        * @brief Resumes task execution after being pauses.
        */
-      void Resume() const;
+      void Resume();
       
       // Uncopyable
       ThreadPool(const ThreadPool&) = delete;
@@ -97,6 +97,8 @@ namespace EK {
       std::map<std::thread::id, bool> threads_;
       WaitableQueue<std::function<void()>> tasks_;
       WaitableQueue<std::thread::id> joinable_threads_;
+      mutable bool is_paused_;
+      mutable Semaphore pause_sem_;
 
       [[nodiscard]] static size_t DetermineThreadCount(size_t thread_count);
       void CreateThreads(size_t thread_count);

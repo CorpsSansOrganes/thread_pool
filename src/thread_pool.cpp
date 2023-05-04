@@ -22,17 +22,26 @@ namespace EK {
     // appropriate number.
   }
 
-  void ThreadPool::Pause() const {
-    // If thread pool isn't already paused:
-    // Check how many threads there are. Then add PauseTask for each thread.
-    // PauseTask contains a semaphore, which will block all threads.
-    // Set is_paused flag to true to prevent multiple pauses.
+  void ThreadPool::Pause() {
+    if (is_paused_) {
+      return;
+    }
+
+    for (auto i = 0; i < thread_count_; ++i) {
+      this->Submit([this] {
+          this->pause_sem_.Acquire();
+        });
+    }
+    is_paused_ = true;
   }
 
-  void ThreadPool::Resume() const {
-    // If thread pool is paused:
-    // Check how many threads there are. Then Release the semaphore for each thread.
-    // Set is_paused flag to flase to prevent multiple resumes.
+  void ThreadPool::Resume() {
+    if (!is_paused_) {
+      return;
+    }
+
+    pause_sem_.Release(thread_count_);
+    is_paused_ = false;
   }
 
   /**-----------------*
