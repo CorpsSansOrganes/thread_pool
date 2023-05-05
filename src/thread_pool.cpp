@@ -1,5 +1,5 @@
 #include "thread_pool.hpp" // EK::ThreadPool
-#include <cmath>         // std::abs
+#include <cmath>           // std::abs
 
 namespace EK {
   /**-----------------*
@@ -9,7 +9,6 @@ namespace EK {
   ThreadPool::ThreadPool(size_t thread_count) :
     thread_count_(DetermineThreadCount(thread_count))
   {
-    // Create threads with thread handler
     CreateThreads(thread_count_);
   }
 
@@ -74,20 +73,17 @@ namespace EK {
 
   void ThreadPool::ServeTasks() {
     auto id = std::this_thread::get_id();
-
     {
       std::unique_lock<decltype(mutex_)> lock(mutex_);
       should_run_[id] = true;
     }
 
-    // Serve tasks
     while (should_run_[id]) {
       auto task = tasks_.Deque();
       waiting_cv_.notify_one();
       task();
     }
 
-    // When terminating, add oneself to the joinable threads queue.
     joinable_threads_.Enqueue(id);
   }
 
