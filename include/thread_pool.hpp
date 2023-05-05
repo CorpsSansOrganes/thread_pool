@@ -105,6 +105,7 @@ namespace EK {
 
       [[nodiscard]] static size_t DetermineThreadCount(size_t thread_count);
       void CreateThreads(size_t thread_count);
+      void RemoveThreads(size_t thread_count);
       void WaitForTasks();
       void ServeTasks();
   };

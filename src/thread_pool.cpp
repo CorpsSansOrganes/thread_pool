@@ -1,11 +1,11 @@
 #include "thread_pool.hpp" // EK::ThreadPool
-#include <mutex>
-#include <thread>
+#include <cmath>         // std::abs
 
 namespace EK {
   /**-----------------*
    * PUBLIC FUNCTIONS *
    *------------------*/
+  
   ThreadPool::ThreadPool(size_t thread_count) :
     thread_count_(DetermineThreadCount(thread_count))
   {
@@ -19,9 +19,12 @@ namespace EK {
   }
 
   void ThreadPool::SetThreadNum(std::size_t num_threads) {
-    // Determine if threads should be added or reduced.
-    // Then either call CreateThreads(...) or RemoveThreads(...) with the
-    // appropriate number.
+    size_t diff = std::abs(static_cast<long long>(num_threads - thread_count_));
+    if (num_threads > thread_count_) {
+      CreateThreads(diff);
+    } else {
+      RemoveThreads(diff);
+    }
   }
 
   void ThreadPool::Pause() {
@@ -92,5 +95,4 @@ namespace EK {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
     waiting_cv_.wait(lock, [this] { return tasks_.IsEmpty(); });
   }
-
 } // end namespace EK
