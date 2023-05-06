@@ -1,5 +1,6 @@
 #include "thread_pool.hpp" // EK::ThreadPool
 #include <cmath>           // std::abs
+#include <functional>
 
 namespace EK {
   /**-----------------*
@@ -30,9 +31,9 @@ namespace EK {
       return;
     }
 
-    for (auto i = 0; i < thread_count_; ++i) {
-      this->Submit([this] {
-          this->pause_sem_.Acquire();
+    for (size_t i = 0; i < thread_count_; ++i) {
+      Submit([this] {
+          pause_sem_.Acquire();
         });
     }
     is_paused_ = true;
@@ -52,7 +53,7 @@ namespace EK {
    *-------------------*/
 
   void ThreadPool::CreateThreads(size_t thread_count) {
-    for (int i = 0; i < thread_count; ++i) {
+    for (size_t i = 0; i < thread_count; ++i) {
       auto new_thread = std::thread(&ThreadPool::ServeTasks, this);
       threads_.emplace(new_thread.get_id(), new_thread);
     }
@@ -72,7 +73,7 @@ namespace EK {
 
   void ThreadPool::RemoveThreads(size_t thread_count) {
     // Each threads receives a task to terminate itself.
-    for (auto i = 0; i < thread_count; ++i) {
+    for (size_t i = 0; i < thread_count; ++i) {
       Submit([this] { 
             std::unique_lock<decltype(mutex_)> lock(mutex_);
             should_run_[std::this_thread::get_id()] = false;
@@ -80,7 +81,7 @@ namespace EK {
     }
 
     // Join back threads that terminated.
-    for (auto i = 0; i < thread_count; ++i) { 
+    for (size_t i = 0; i < thread_count; ++i) { 
       auto id = joinable_threads_.Deque();
       auto terminated_thread = std::move(threads_[id]);
       threads_.erase(id);

@@ -116,7 +116,7 @@ namespace EK {
     std::future<typename std::result_of<F(Args...)>::type> {
 
       // Shorthand for return type of calling task with args.
-      using return_t = typename std::result_of<F(Args...)>;
+      using return_t = typename std::result_of<F(Args...)>::type;
 
       // Wrapping the callable to be asynchronously invokable via std::packaged_task.
       auto async_task = std::make_shared<std::packaged_task<return_t()>>(
