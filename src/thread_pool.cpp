@@ -55,7 +55,7 @@ namespace EK {
   void ThreadPool::CreateThreads(size_t thread_count) {
     for (size_t i = 0; i < thread_count; ++i) {
       auto new_thread = std::thread(&ThreadPool::ServeTasks, this);
-      threads_.emplace(new_thread.get_id(), new_thread);
+      threads_.emplace(new_thread.get_id(), std::move(new_thread));
     }
   }
 

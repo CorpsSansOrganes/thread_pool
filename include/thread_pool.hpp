@@ -27,7 +27,8 @@
 #include <thread>             // std::thread
 #include <cstddef>            // size_t
 #include <future>             // std::future
-#include <unordered_map>      // std::unordered_map
+//#include <unordered_map>      // std::unordered_map
+#include <map>      // std::map
 #include <functional>         // std::bind
 #include <type_traits>        // std::result_of
 #include <utility>            // std::forward
@@ -94,8 +95,8 @@ namespace EK {
 
     private:
       size_t thread_count_;
-      std::unordered_map<std::thread::id, std::thread> threads_;
-      std::unordered_map<std::thread::id, bool> should_run_;
+      std::map<std::thread::id, std::thread> threads_;
+      std::map<std::thread::id, bool> should_run_;
       WaitableQueue<std::function<void()>> tasks_;
       WaitableQueue<std::thread::id> joinable_threads_;
       std::mutex mutex_;
