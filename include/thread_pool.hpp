@@ -104,7 +104,7 @@ namespace EK {
       mutable Semaphore pause_sem_;
       std::condition_variable waiting_cv_;
 
-      [[nodiscard]] static size_t DetermineThreadCount(size_t thread_count);
+      static size_t DetermineThreadCount(size_t thread_count);
       void CreateThreads(size_t thread_count);
       void RemoveThreads(size_t thread_count);
       void WaitForTasks();

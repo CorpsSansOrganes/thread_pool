@@ -8,7 +8,9 @@ namespace EK {
    *------------------*/
   
   ThreadPool::ThreadPool(size_t thread_count) :
-    thread_count_(DetermineThreadCount(thread_count)) {
+    thread_count_(ThreadPool::DetermineThreadCount(thread_count)),
+    threads_(), should_run_(), tasks_(), joinable_threads_(), mutex_(),
+    is_paused_(false), pause_sem_(), waiting_cv_() {
     CreateThreads(thread_count_);
   }
 
@@ -59,7 +61,7 @@ namespace EK {
     }
   }
 
-  static size_t DetermineThreadCount(size_t thread_count) {
+  size_t ThreadPool::DetermineThreadCount(size_t thread_count) {
     // User specified number of threads.
     if (thread_count > 0) {
       return thread_count;
