@@ -28,8 +28,8 @@ int main() {
 
   status += SmokeTest();
   status += BasicUsageTest();
-  //status += WaitForTasksTest();
-  //status += PerfectForwardingTest();
+  status += WaitForTasksTest();
+  status += PerfectForwardingTest();
   //status += PauseAndResumeTest();
 
   if (0 == status) {
@@ -154,7 +154,7 @@ static int PerfectForwardingTest() {
   // forwarding, that is the type category (l-value/r-value) is unaltered.
   std::string s = "I hope I land at CheckPerfectForwarding(std::string &&)!";
   EK::ThreadPool tp(1);
-  auto res = tp.Submit([s] { return CheckPerfectForwarding(std::move(s)); });
+  auto res = tp.Submit([&s] { return CheckPerfectForwarding(std::move(s)); });
   if (res.get()) {
     std::cerr << "ERROR: PerfectForwardingTest" << std::endl;
     std::cerr << "s was altered to an l-value reference" << std::endl;
