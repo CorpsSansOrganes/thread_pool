@@ -1,49 +1,62 @@
-CC = g++
+# Compiler options
+CC := g++
+
+# Release build flags
 CFLAGS := -std=c++11 -pedantic-errors -Wall -Wextra -DNDEBUG -O3 -pthread
+# Debug build flags
 DFLAGS := -std=c++11 -g -pedantic-errors -Wall -Wextra -O3 -pthread
+
+# Directories
+SRC := ./src
+TEST := ./test
+OBJ_RELEASE := ./obj/release
+OBJ_DEBUG := ./obj/debug
 INCLUDE := ./include
-RELEASE_TARGET := release.out
-DEBUG_TARGET := debug.out
 
-# Get all .cpp files from the src and test directories.
-SRCS := $(wildcard src/*.cpp) $(wildcard test/*.cpp)
+# Dependencies
+SEM_OBJ := semaphore.o semaphore_test.o
+WQ_OBJ := waitable_queue_test.o
+TP_OBJ := semaphore.o thread_pool.o thread_pool_test.o
 
-# Substitute all ".cpp" file names to ".o" file names.
-RELEASE_OBJS := $(patsubst src/%.cpp,obj/%.release.o,$(SRCS))
-DEBUG_OBJS := $(patsubst src/%.cpp,obj/%.debug.o,$(SRCS))
+# By default, build in release mode
+mode := RELEASE
 
-.PHONY: all clean release debug
+# Set compilation flags & obj directory according to build mode.
+MODE_UPPER := $(shell echo $(mode) | tr '[:lower:]' '[:upper:]')
+ifeq ($(MODE_UPPER), RELEASE)
+	OBJ := $(OBJ_RELEASE)
+	FLAGS := $(CFLAGS)
+else ifeq ($(MODE_UPPER), DEBUG)
+	FLAGS := $(DFLAGS)
+	OBJ := $(OBJ_DEBUG)
+else
+	$(error Invalid mode: $(MODE_UPPER))
+endif
 
-all: release debug
+# Executable recipe
+all : sempahore waitable_queue thread_pool
 
-release: $(RELEASE_TARGET)
-debug: $(DEBUG_TARGET)
+semaphore : $(addprefix $(OBJ)/, $(SEM_OBJ))
+	@echo "Building $@ in $(MODE_UPPER) mode"
+	$(CC) $(FLAGS) -I$(INCLUDE) -o $@_$(MODE_UPPER).out $^
 
-$(RELEASE_TARGET): $(RELEASE_OBJS)
-	$(CC) -I$(INCLUDE) -o $@ $^
+waitable_queue : $(addprefix $(OBJ)/, $(WQ_OBJ))
+	@echo "Building $@ in $(MODE_UPPER) mode"
+	$(CC) $(FLAGS) -I$(INCLUDE) -o $@_$(MODE_UPPER).out $^
 
-$(DEBUG_TARGET): $(DEBUG_OBJS)
-	$(CC) -I$(INCLUDE) -o $@ $^
+thread_pool : $(addprefix $(OBJ)/, $(TP_OBJ))
+	@echo "Building $@ in $(MODE_UPPER) mode"
+	$(CC) $(FLAGS) -I$(INCLUDE) -o $@_$(MODE_UPPER).out $^
 
-obj/%.release.o: src/%.cpp
-	$(CC) $(CFLAGS) -I$(INCLUDE) -c $< -o $@
+# Object creation rules. Note test file and source files are separate.
+$(OBJ)/%.o: $(SRC)/%.cpp 
+	$(CC) $(FLAGS) -I$(INCLUDE) -c $< -o $@
 
-obj/%.debug.o: src/%.cpp
-	$(CC) $(DFLAGS) -I$(INCLUDE) -c $< -o $@
-
-# Given a module name, checks if src/module.cpp and test/module_test.cpp exist.
-# If they do, compile them. Otherwise, try to compile only test/module_test.cpp if it exists.
-%:
-	@if test -f src/$@.cpp; then \
-		echo "Compiling module $@"; \
-		$(CC) $(CFLAGS) -I$(INCLUDE) src/$@.cpp test/$@_test.cpp -o $@.out; \
-	elif test -f test/$@_test.cpp; then \
-		echo "Compiling test $@_test"; \
-		$(CC) $(CFLAGS) -I$(INCLUDE) test/$@_test.cpp -o $@.out; \
-	else \
-		echo "Module $@ not found."; \
-	fi
+$(OBJ)/%_test.o: $(TEST)/%_test.cpp 
+	$(CC) $(FLAGS) -I$(INCLUDE) -c $< -o $@
 
 clean:
-	rm -rf $(RELEASE_TARGET) $(DEBUG_TARGET) obj/*.release.o obj/*.debug.o
+	rm -rf $(OBJ_DEBUG)/*.o $(OBJ_RELEASE)/*.o ./*.out
+# Phony targets
+.PHONY: all clean 
 

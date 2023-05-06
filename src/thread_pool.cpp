@@ -7,8 +7,7 @@ namespace EK {
    *------------------*/
   
   ThreadPool::ThreadPool(size_t thread_count) :
-    thread_count_(DetermineThreadCount(thread_count))
-  {
+    thread_count_(DetermineThreadCount(thread_count)) {
     CreateThreads(thread_count_);
   }
 
