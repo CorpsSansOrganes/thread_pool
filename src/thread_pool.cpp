@@ -71,6 +71,26 @@ namespace EK {
     return thread_count ? thread_count : 1;
   }
 
+  void ThreadPool::RemoveThreads(size_t thread_count) {
+    // Each threads receives a task to terminate itself.
+    for (auto i = 0; i < thread_count; ++i) {
+      Submit([this] { 
+            std::unique_lock<decltype(mutex_)> lock(mutex_);
+            should_run_[std::this_thread::get_id()] = false;
+          });
+    }
+
+    // Join back threads that terminated.
+    for (auto i = 0; i < thread_count; ++i) { 
+      auto id = joinable_threads_.Deque();
+      auto terminated_thread = std::move(threads_[id]);
+      threads_.erase(id);
+      if (terminated_thread.joinable()) {
+        terminated_thread.join();
+      }
+    }
+  }
+
   void ThreadPool::ServeTasks() {
     auto id = std::this_thread::get_id();
     {
