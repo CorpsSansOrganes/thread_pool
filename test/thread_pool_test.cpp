@@ -46,6 +46,7 @@ static int SmokeTest() {
 }
 
 static int BasicUsageTest() {
+  auto status = 0;
   EK::ThreadPool tp(4);
 
   // Send lambda with return value
@@ -54,17 +55,17 @@ static int BasicUsageTest() {
   if (2 != res1.get()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
     std::cerr << "Expected to get 2, but instead got " << res1.get() << std::endl;
-    return EXIT_FAILURE;
+    status += EXIT_FAILURE;
   }
 
   // Send lambda without return value
   int answer = 0;
-  auto res2 = tp.Submit([](int& res) { res = 42; }, answer);
+  auto res2 = tp.Submit([](int& res) { res = 42; return res; }, answer);
   res2.wait();
   if (42 != answer) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
     std::cerr << "Expected answer to be 42, but instead it is " << answer << std::endl;
-    return EXIT_FAILURE;
+    status += EXIT_FAILURE;
   }
 
   // Use templative function
@@ -77,14 +78,14 @@ static int BasicUsageTest() {
   if (2 != res3.get()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
     std::cerr << "Expected answer to be 2, but instead it is " << res3.get() << std::endl;
-    return EXIT_FAILURE;
+    status += EXIT_FAILURE;
   }
 
   auto res4 = tp.Submit([]() {return Sum(1, 1); });
-  if (2 != res3.get()) {
+  if (2 != res4.get()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
     std::cerr << "Expected answer to be 2, but instead it is " << res4.get() << std::endl;
-    return EXIT_FAILURE;
+    status += EXIT_FAILURE;
   }
 
   // Sumbit a function 
@@ -92,7 +93,7 @@ static int BasicUsageTest() {
   if(0 != res5.get()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
     std::cerr << "Expected function to return 0, but instead got " << res5.get() << std::endl;
-    return EXIT_FAILURE;
+    status += EXIT_FAILURE;
   }
 
   // Submit a functor
@@ -117,10 +118,10 @@ static int BasicUsageTest() {
   if (true != func.WasCalled()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
     std::cerr << "Functor wasn't called! expected was_called_ to be true." << std::endl;
-    return EXIT_FAILURE;
+    status += EXIT_FAILURE;
   }
 
-  return EXIT_SUCCESS;
+  return status;
 }
 
 static int WaitForTasksTest() {
