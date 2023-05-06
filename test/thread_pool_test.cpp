@@ -60,7 +60,7 @@ static int BasicUsageTest() {
 
   // Send lambda without return value
   int answer = 0;
-  auto res2 = tp.Submit([](int& res) { res = 42; return res; }, answer);
+  auto res2 = tp.Submit([](int* res) { *res = 42; }, &answer);
   res2.wait();
   if (42 != answer) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
@@ -73,7 +73,7 @@ static int BasicUsageTest() {
   // std::function argument.
   int i = 1;
   int j = 1;
-  auto res3 = tp.Submit([](int i, int j) {return Sum(i, j); }, i, j);
+  auto res3 = tp.Submit([](int i, int j) { return Sum(i, j); }, i, j);
 
   if (2 != res3.get()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
@@ -101,23 +101,41 @@ static int BasicUsageTest() {
   public:
     Functor() : was_called_(false)
       {}
-    void operator()() const {
-      was_called_ = true;
+    int operator()() const {
+      this->was_called_ = true;
+      return 42;
     }
     bool WasCalled() const {
-      return was_called_;
+      return this->was_called_;
     }
 
   private:
     mutable bool was_called_;
   };
 
+  // Sumbit a functor object by reference, so that the object itself
+  // is modified.
   auto func = Functor();
-  auto res6 = tp.Submit(func);
+  auto res6 = tp.Submit(std::ref(func));
+
   res6.wait();
   if (true != func.WasCalled()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
-    std::cerr << "Functor wasn't called! expected was_called_ to be true." << std::endl;
+    std::cerr << "Functor state hasn't changed! expected was_called_ to be true." << std::endl;
+    status += EXIT_FAILURE;
+  }
+
+  // Sumbit a functor object by value. Note that here the object itself 
+  // will not be modified, as we pass a copy of it. Therefore, the functor's
+  // state will not change, unlike before.
+  auto func2 = Functor();
+  auto res7 = tp.Submit(func2); 
+  if (42 != res7.get() && false != func2.WasCalled()) {
+    std::cerr << "ERROR: BasicUsageTest" << std::endl;
+    std::cerr << "Functor state changed!" << std:: endl;
+    std::cerr << "Note: expected was_called_ to be false, it is " 
+      << func2.WasCalled() << std::endl;
+    std::cerr << "      expected return value to be 42, it is " << res7.get() << std::endl;
     status += EXIT_FAILURE;
   }
 
@@ -154,6 +172,10 @@ static int PerfectForwardingTest() {
   // forwarding, that is the type category (l-value/r-value) is unaltered.
   std::string s = "I hope I land at CheckPerfectForwarding(std::string &&)!";
   EK::ThreadPool tp(1);
+  if (1 != CheckPerfectForwarding(s)) {
+    // Making sure the test works.
+    return EXIT_FAILURE;
+  }
   auto res = tp.Submit([&s] { return CheckPerfectForwarding(std::move(s)); });
   if (res.get()) {
     std::cerr << "ERROR: PerfectForwardingTest" << std::endl;
@@ -222,11 +244,11 @@ static int PauseAndResumeTest() {
   std::this_thread::sleep_for(std::chrono::seconds(2));
 
   // Check that exactly tasks_num - thread_count tasks got performed.
-  auto actual_count = 0;
+  size_t actual_count = 0;
   for (const auto &t : tasks_arr) {
     actual_count += t.GetCounter();
   }
-  auto expected_count = tasks_num - thread_count;
+  size_t expected_count = tasks_num - thread_count;
 
   if (expected_count != actual_count) {
     std::cerr << "ERROR! PauseAndReactual_counteTest" << std::endl;
@@ -266,8 +288,10 @@ static int ReturnArg(int i) {
 
 static int CheckPerfectForwarding(std::string&& s) {
   return 0;
+  (void)s;
 }
 
 static int CheckPerfectForwarding(const std::string& s) {
   return 1;
+  (void)s;
 }
