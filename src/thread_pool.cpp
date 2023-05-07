@@ -110,6 +110,7 @@ namespace EK {
   }
 
   void ThreadPool::WaitForTasks() {
+    Resume();
     std::unique_lock<decltype(mutex_)> lock(mutex_);
     waiting_cv_.wait(lock, [this] { return tasks_.IsEmpty(); });
   }

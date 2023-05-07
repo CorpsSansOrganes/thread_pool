@@ -89,6 +89,11 @@ namespace EK {
        */
       void Resume();
       
+      /**
+       * @brief Wait for tasks currently in the thread pool to finish.
+       */
+      void WaitForTasks();
+
       // Uncopyable
       ThreadPool(const ThreadPool&) = delete;
       ThreadPool& operator=(const ThreadPool&) = delete;
@@ -107,7 +112,6 @@ namespace EK {
       static size_t DetermineThreadCount(size_t thread_count);
       void CreateThreads(size_t thread_count);
       void RemoveThreads(size_t thread_count);
-      void WaitForTasks();
       void ServeTasks();
   };
 

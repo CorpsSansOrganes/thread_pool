@@ -15,6 +15,7 @@ static int BasicUsageTest();
 static int WaitForTasksTest();
 static int PerfectForwardingTest();
 static int PauseAndResumeTest();
+static int MultiPauseAndMultiResumeTest();
 
 static int CheckPerfectForwarding(std::string&& s);
 static int CheckPerfectForwarding(const std::string& s);
@@ -30,7 +31,8 @@ int main() {
   status += BasicUsageTest();
   status += WaitForTasksTest();
   status += PerfectForwardingTest();
-  //status += PauseAndResumeTest();
+  status += MultiPauseAndMultiResumeTest();
+  status += PauseAndResumeTest();
 
   if (0 == status) {
     std::cerr << "SUCCESS: Thread Pool" << std::endl;
@@ -81,7 +83,7 @@ static int BasicUsageTest() {
     status += EXIT_FAILURE;
   }
 
-  auto res4 = tp.Submit([]() {return Sum(1, 1); });
+  auto res4 = tp.Submit([]() { return Sum(1, 1); });
   if (2 != res4.get()) {
     std::cerr << "ERROR: BasicUsageTest" << std::endl;
     std::cerr << "Expected answer to be 2, but instead it is " << res4.get() << std::endl;
@@ -186,19 +188,18 @@ static int PerfectForwardingTest() {
   return EXIT_SUCCESS;
 }
 
-static int PauseAndResumeTest() {
+static int MultiPauseAndMultiResumeTest() {
   const size_t thread_count = 2;
-  const size_t tasks_num = 10;
   EK::ThreadPool tp(thread_count);
 
   // Making sure several pauses are prevented.
   tp.Pause();
   tp.Pause();
-  auto res = tp.Submit([] { return 1; }); 
+  auto res1 = tp.Submit([] { return 1; }); 
   tp.Resume();
 
   if (std::future_status::timeout ==
-      res.wait_for(std::chrono::milliseconds(100))) {
+      res1.wait_for(std::chrono::milliseconds(100))) {
     std::cerr << "ERROR! PauseAndResumeTest" << std::endl;
     std::cerr << "Multiple pauses aren't prevented." << std::endl;
     return EXIT_FAILURE;
@@ -206,19 +207,30 @@ static int PauseAndResumeTest() {
 
   // Making sure several resumes are prevented.
   tp.Resume();
+  tp.Resume();
   tp.Pause();
-  res = tp.Submit([] { return 1; });
+  auto res2 = tp.Submit([] { return 1; });
 
   if (std::future_status::ready == 
-      res.wait_for(std::chrono::milliseconds(100))) {
+      res2.wait_for(std::chrono::milliseconds(100))) {
     std::cerr << "ERROR! PauseAndResumeTest" << std::endl;
     std::cerr << "Multiple resumes aren't prevented." << std::endl;
     return EXIT_FAILURE;
   }
 
+  return EXIT_SUCCESS;
+
+}
+
+static int PauseAndResumeTest() {
   // Submit tasks to the thread pool, which count how many times they've
   // been run. Make sure that lines up with the expected amount when pausing
   // and resuming.
+
+  auto status = 0;
+  const size_t tasks_num = 10;
+  const size_t thread_count = 2;
+  EK::ThreadPool tp(thread_count);
 
   class CountFunctor {
   public:
@@ -237,28 +249,30 @@ static int PauseAndResumeTest() {
 
   std::array<CountFunctor, tasks_num> tasks_arr;
   for (auto &t : tasks_arr) {
-    tp.Submit(t);
+    tp.Submit(std::ref(t));
   }
 
   tp.Pause();
-  std::this_thread::sleep_for(std::chrono::seconds(2));
-
-  // Check that exactly tasks_num - thread_count tasks got performed.
+  // Check that exactly thread_count tasks got performed.
   size_t actual_count = 0;
   for (const auto &t : tasks_arr) {
     actual_count += t.GetCounter();
   }
-  size_t expected_count = tasks_num - thread_count;
+  tp.Resume();
+  tp.Pause();
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  size_t expected_count = thread_count;
 
   if (expected_count != actual_count) {
-    std::cerr << "ERROR! PauseAndReactual_counteTest" << std::endl;
+    std::cerr << "ERROR! PauseAndResumeTest" << std::endl;
     std::cerr << "After pausing, expected " << expected_count 
       << " tasks to be performed, but " << actual_count << " were." << std::endl;
-    return EXIT_FAILURE;
+    status += EXIT_FAILURE;
   }
 
   // Resume, make sure that all tasks got carried out.
   tp.Resume();
+  tp.WaitForTasks();
   expected_count = tasks_num;
   actual_count = 0;
   for (const auto &t : tasks_arr) {
@@ -269,12 +283,11 @@ static int PauseAndResumeTest() {
     std::cerr << "ERROR! PauseAndReactual_counteTest" << std::endl;
     std::cerr << "After resuming, expected " << expected_count 
       << " tasks to be performed, but " << actual_count << " were." << std::endl;
-    return EXIT_FAILURE;
+    status += EXIT_FAILURE;
   }
 
-  return EXIT_SUCCESS;
+  return status;
 }
-
 // Utilities
 
 template <typename T>
