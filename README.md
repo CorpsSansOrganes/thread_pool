@@ -90,7 +90,7 @@ items or wait until a new item becomes available.
 
 ### Features 
 1. Flexible: any container supporting push(), pop(), and front() to be used as the underlying data structure.
-2. Lightweight: simply include "waitable_queue.hpp" to use it.
+2. Lightweight: simply include `waitable_queue.hpp` to use it.
 
 ### Usage
 ```C++
