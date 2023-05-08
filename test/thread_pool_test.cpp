@@ -45,11 +45,21 @@ int main() {
 }
 
 // Tests
+/**
+ * @brief Smoke test - we plug it in, if nothing burns we are happy.
+ */
 static int SmokeTest() {
   EK::ThreadPool tp;
   return 0;
 }
 
+/**
+ * @brief Testing and demonstrating the thread pool's basic usage.
+ * 1. How to submit tasks (std::function, functors, lambdas etc).
+ * 2. Getting a return value from a task.
+ *
+ * @return 0 upon success, 1 upon failure.
+ */
 static int BasicUsageTest() {
   auto status = 0;
   EK::ThreadPool tp(4);
@@ -147,6 +157,12 @@ static int BasicUsageTest() {
   return status;
 }
 
+/**
+ * @brief Test the method WaitForTasks() by submiting a large number of tasks,
+ * calling WaitForTasks() and varifying that all tasks submitted where executed.
+ * 
+ * @return 0 upon success, 1 upon failure.
+ */
 static int WaitForTasksTest() {
   // Run 500 tasks. Make sure all tasks got executed before
   // the dtor was called.
@@ -172,15 +188,18 @@ static int WaitForTasksTest() {
   return EXIT_SUCCESS;
 }
 
+/**
+ * @brief Making sure that Submit() has perfect forwarding, meaning that the 
+ * type category (l-value or r-value) of arguments passed to it is unaltered.
+ *
+ * @return 0 upon success, 1 upon failure.
+ */
 static int PerfectForwardingTest() {
-  // Making sure that when we call an overloaded function we still get perfect 
-  // forwarding, that is the type category (l-value/r-value) is unaltered.
-  std::string s = "I hope I land at CheckPerfectForwarding(std::string &&)!";
+  // calling an overloaded function, we expect the r-value overload to be called.
+  // If it isn't, Submit() changed the argument's type category to l-value. 
+  std::string s = "I hope I get passed to CheckPerfectForwarding(std::string &&)!";
   EK::ThreadPool tp(1);
-  if (1 != CheckPerfectForwarding(s)) {
-    // Making sure the test works.
-    return EXIT_FAILURE;
-  }
+
   auto res = tp.Submit([&s] { return CheckPerfectForwarding(std::move(s)); });
   if (res.get()) {
     std::cerr << "ERROR: PerfectForwardingTest" << std::endl;
@@ -191,6 +210,12 @@ static int PerfectForwardingTest() {
   return EXIT_SUCCESS;
 }
 
+/**
+ * @brief Testing Pause() and Resume() to make sure that calling one of them
+ * several times doesn't cause any problems.
+ *
+ * @return 0 upon success, 1 upon failure.
+ */
 static int MultiPauseAndMultiResumeTest() {
   const size_t thread_count = 2;
   EK::ThreadPool tp(thread_count);
@@ -225,11 +250,14 @@ static int MultiPauseAndMultiResumeTest() {
 
 }
 
+/**
+ * @brief Testing Pause() and Resume() basic functionality by inserting tasks 
+ * counting how many times they've been run and making sure that lines up with 
+ * pausing and resuming the thread pool.
+ *
+ * @return 0 upon success, 1 upon failure.
+ */
 static int PauseAndResumeTest() {
-  // Submit tasks to the thread pool, which count how many times they've
-  // been run. Make sure that lines up with the expected amount when pausing
-  // and resuming.
-
   auto status = 0;
   const size_t tasks_num = 10;
   const size_t thread_count = 2;
@@ -250,14 +278,16 @@ static int PauseAndResumeTest() {
     int counter_;
   };
 
+  // Inserting tasks_num tasks.
   std::array<CountFunctor, tasks_num> tasks_arr;
   for (auto &t : tasks_arr) {
     tp.Submit(std::ref(t));
   }
 
+  // Sleep such that exactly thread_count tasks could have been acquired by threads,
+  // pause and check that no additional tasks are being performed.
   std::this_thread::sleep_for(std::chrono::milliseconds(1500));
   tp.Pause();
-  // Check that exactly thread_count tasks got performed.
   size_t actual_count = 0;
   for (const auto &t : tasks_arr) {
     actual_count += t.GetCounter();
@@ -290,15 +320,25 @@ static int PauseAndResumeTest() {
   return status;
 }
 
-/** @brief To verify the number of threads inside the thread pool, submit twice as 
- * many tasks as there are threads.
- * To make sure each thread performs at least one task, after recording its id,
- * the thread is block until it is released by the main thread.
- * We then let the rest of the tasks to be executed, and make sure that the number
- * of IDs isn't higher or lower than what we expected.
+/**
+ * @brief Testing SetNumThreads() basic functionality: that after calling it
+ * the thread pool has the number of threads we expect.
  *
- * This test is fundemantally based on the pigeonhole principle. 
- * It is theoretically prone to a false negative, but it is highly unlikely.
+ * Since there's no portable way to verify the number of threads in a process
+ * directly, to verify the number of threads inside the thread pool, we'll use the
+ * pigeonhole principle.
+ *
+ * Submit twice as many tasks as there are threads. Each task documents the ID
+ * of the thread which executed it. Then:
+ * 1. Make sure each thread performs at least one task.
+ * 2. Then let the rest of the tasks to be executed.
+ * 3. Verify that the number of unique ids documented in the tasks is exactly equivalent
+ *    to the number of threads we expect to have in our thread pool.
+ *
+ * @note Theoretically this test can produce a false negative, but it is highly 
+ * unlikely.
+ *
+ * @return 0 upon success, 1 upon failure.
  */
 static int SetNumThreadsTest() {
   EK::ThreadPool tp;
