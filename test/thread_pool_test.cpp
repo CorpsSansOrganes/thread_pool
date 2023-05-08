@@ -208,6 +208,7 @@ static int PerfectForwardingTest() {
   }
 
   return EXIT_SUCCESS;
+  CheckPerfectForwarding(s); // Preventing warning CheckPerfectForwarding(const std::string&) unused.
 }
 
 /**

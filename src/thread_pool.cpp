@@ -84,7 +84,7 @@ namespace EK {
 
     // Join back threads that terminated.
     for (size_t i = 0; i < thread_count; ++i) { 
-      auto id = joinable_threads_.Deque();
+      auto id = joinable_threads_.Dequeue();
       auto terminated_thread = std::move(threads_[id]);
       threads_.erase(id);
       if (terminated_thread.joinable()) {
@@ -101,7 +101,7 @@ namespace EK {
     }
 
     while (should_run_[id]) {
-      auto task = tasks_.Deque();
+      auto task = tasks_.Dequeue();
       waiting_cv_.notify_one();
       task();
     }

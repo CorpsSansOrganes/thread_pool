@@ -6,8 +6,8 @@
 #include <vector>             // std::vector
 
 static int SmokeTest();
-static int FailedTimeoutDeque();
-static int SuccessfulTimeoutDeque();
+static int FailedTimeoutDequeue();
+static int SuccessfulTimeoutDequeue();
 static int OneProducerMultipleConsumers(int n);
 static int EmptyTest();
 static int SizeTest();
@@ -22,8 +22,8 @@ int main() {
   int status = 0;
   
   status += SmokeTest();
-  status += FailedTimeoutDeque();
-  status += SuccessfulTimeoutDeque();
+  status += FailedTimeoutDequeue();
+  status += SuccessfulTimeoutDequeue();
   status += OneProducerMultipleConsumers(5);
   status += EmptyTest();
   status += SizeTest();
@@ -57,7 +57,7 @@ static int EmptyTest() {
     status += EXIT_FAILURE;
   }
 
-  waitable_queue.Deque();
+  waitable_queue.Dequeue();
   if (true != waitable_queue.IsEmpty()) {
     std::cout << "ERROR: EmptyTest" << std::endl;
     std::cout << "IsEmpty() for queue that's been emptied retuned false!" << std::endl;
@@ -84,7 +84,7 @@ static int SizeTest() {
     status += EXIT_FAILURE;
   }
 
-  waitable_queue.Deque();
+  waitable_queue.Dequeue();
   if (0 != waitable_queue.Size()) {
     std::cout << "ERROR: SizeTest" << std::endl;
     std::cout << "Size() for queue that's been emptied retuned " 
@@ -94,39 +94,39 @@ static int SizeTest() {
 
   return status;
 }
-static int FailedTimeoutDeque() {
+static int FailedTimeoutDequeue() {
   // Attempting to deque from the waitable queue and failing.
   EK::WaitableQueue<int> waitable_queue;
   int res = 0;
   int status = (false != 
-      waitable_queue.Deque(std::chrono::milliseconds(1), res));
+      waitable_queue.Dequeue(std::chrono::milliseconds(1), res));
 
   if (status) {
-    std::cerr << "FAILED: FailedTimeoutDeque" << std::endl;
-    std::cerr << "Expected Deque(timeout, outparam) to return false," << 
+    std::cerr << "FAILED: FailedTimeoutDequeue" << std::endl;
+    std::cerr << "Expected Dequeue(timeout, outparam) to return false," << 
       " but true was returned instead." << std::endl;
   } 
 
   return status;
 }
 
-static int SuccessfulTimeoutDeque() {
+static int SuccessfulTimeoutDequeue() {
   // Attempting to deque from the waitable queue and succeeding.
   EK::WaitableQueue<int> waitable_queue;
   int res = 0;
 
   waitable_queue.Enqueue(1234);
   int status = (true !=
-      waitable_queue.Deque(std::chrono::milliseconds(1), res));
+      waitable_queue.Dequeue(std::chrono::milliseconds(1), res));
 
   if (status) {
-    std::cerr << "FAILED: SuccessfulTimeoutDeque" << std::endl;
-    std::cerr << "Expected Deque(timeout, outparam) to return true," << 
+    std::cerr << "FAILED: SuccessfulTimeoutDequeue" << std::endl;
+    std::cerr << "Expected Dequeue(timeout, outparam) to return true," << 
       " but false was returned instead." << std::endl;
   } 
 
   if (1234 != res) {
-    std::cerr << "FAILED: SuccessfulTimeoutDeque" << std::endl;
+    std::cerr << "FAILED: SuccessfulTimeoutDequeue" << std::endl;
     std::cerr << "Expected outparam to be equal 1234, but instead it is "
       << res << std::endl;
     ++status;
@@ -182,7 +182,7 @@ static void Consumer(EK::WaitableQueue<T> &waitable_queue,
     std::mutex& mutex,
     int& sum) {
   // Consume data from the waitable queue, and add it to sum.
-  int value = waitable_queue.Deque();
+  int value = waitable_queue.Dequeue();
   std::lock_guard<std::mutex> lock(mutex);
   sum += value;
 }

@@ -7,8 +7,7 @@
  * Semaphore is a signalling device, used for synchronisation between
  * threads, as it restricts access to critical code sections until a signal 
  * is received.
- * The centre piece of a semaphore is a counter.
- * When a thread wants to pass the semaphore, it checks the counter.
+ * Each semaphore has a counter. When a thread reached a semaphore, it checks its counter.
  * 1. If the counter is positive, it decrements it and passes.
  * 2. If the counter is zero, the thread will be blocked until the semaphore is 
  *    incremented by another thread.

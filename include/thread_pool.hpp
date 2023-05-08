@@ -8,8 +8,8 @@
  * It is used to simplify performing tasks concurrently.
  *
  * By providing a dedicated object for multithreaded operations, 
- * it reduces the overhead cost of creating and destorying threads.
- * It also alleviates the headace of managing synchronisation between threads.
+ * it reduces the overhead cost of creating and destroying threads.
+ * It also alleviates the headache of managing synchronization between threads.
  *
  * Additional features of this implementation:
  * 1. Supporting asynchronous return values from tasks.

@@ -22,7 +22,7 @@ namespace EK {
    *
    * @tparam T is the value type which the container holds.
    * @tparam Container is the container class used. Needs to support the 
-   * following methods: push(), pop(), front(), empty().
+   * following methods: push(), pop(), front().
    */
   template <class T, class Container = std::queue<T>>
   class WaitableQueue {
@@ -46,7 +46,7 @@ namespace EK {
        * @return An item removed from the queue. 
        */
 
-      T Deque();
+      T Dequeue();
 
       /**
        * @brief Removes an item from the queue, with a timeout.
@@ -57,7 +57,7 @@ namespace EK {
        *
        * @return True if an item has been acquired, and False otherwise.
        */
-      bool Deque(std::chrono::milliseconds timeout, T& outparam);
+      bool Dequeue(std::chrono::milliseconds timeout, T& outparam);
 
       /**
        * @brief Get the number of elements currently in the queue.
@@ -101,7 +101,7 @@ namespace EK {
   }
 
   template <class T, class Container>
-  T WaitableQueue<T, Container>::Deque() {
+  T WaitableQueue<T, Container>::Dequeue() {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
     cv_.wait(lock, [&]{ return counter_ > 0; });
     --counter_;
@@ -112,7 +112,7 @@ namespace EK {
   }
 
   template <class T, class Container>
-  bool WaitableQueue<T, Container>::Deque(std::chrono::milliseconds timeout,
+  bool WaitableQueue<T, Container>::Dequeue(std::chrono::milliseconds timeout,
       T& outparam) {
     std::unique_lock<decltype(mutex_)> lock(mutex_);
     auto no_timeout = cv_.wait_for(lock, timeout, [&]{ return counter_ > 0; });
