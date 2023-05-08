@@ -13,8 +13,6 @@ Each component is accompanied by a test file which, in addition to ensuring corr
 Here I'll provide an overview of each component, a technical documentation can be found inside each respective header file.
 
 ## Table of Content
-- [Thread Pool](#thread-pool)
-  * [Overview](#overview)
   * [1. Thread Pool](#1-thread-pool)
     + [What is it?](#what-is-it-)
     + [Features](#features)
