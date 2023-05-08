@@ -25,6 +25,7 @@ namespace EK {
     } else {
       RemoveThreads(diff);
     }
+    thread_count_ = num_threads;
   }
 
   void ThreadPool::Pause() {
