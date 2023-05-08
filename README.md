@@ -13,6 +13,10 @@ Each component is accompanied by a test file which, in addition to ensuring corr
 Here I'll provide an overview of each component, a technical documentation can be found inside each respective header file.
 
 ## Build
+To get this repository on your machine:
+```SHELL
+git clone https://github.com/CorpsSansOrganes/thread_pool
+```
 If you're using Linux, the makefile provided can be used to create executables for each module's respective test.
 Simply run in your shell:
 ```SHELL
