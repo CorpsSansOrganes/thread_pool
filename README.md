@@ -12,6 +12,22 @@ Each component is accompanied by a test file which, in addition to ensuring corr
 
 Here I'll provide an overview of each component, a technical documentation can be found inside each respective header file.
 
+## Table of Content
+- [Thread Pool](#thread-pool)
+  * [Overview](#overview)
+  * [1. Thread Pool](#1-thread-pool)
+    + [What is it?](#what-is-it-)
+    + [Features](#features)
+    + [Usage](#usage)
+  * [2. Semaphore](#2-semaphore)
+    + [What is it?](#what-is-it--1)
+    + [Features](#features-1)
+    + [Usage](#usage-1)
+  * [3. Waitable Queue](#3-waitable-queue)
+    + [What is it?](#what-is-it--2)
+    + [Features](#features-2)
+    + [Usage](#usage-2)
+    
 ## 1. Thread Pool 
 ### What is it?
 A **thread pool** is an object which offers an API for distributing tasks among a group of threads, which then execute the submitted tasks
