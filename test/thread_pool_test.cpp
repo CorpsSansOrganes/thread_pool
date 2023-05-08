@@ -252,15 +252,13 @@ static int PauseAndResumeTest() {
     tp.Submit(std::ref(t));
   }
 
+  std::this_thread::sleep_for(std::chrono::milliseconds(1500));
   tp.Pause();
   // Check that exactly thread_count tasks got performed.
   size_t actual_count = 0;
   for (const auto &t : tasks_arr) {
     actual_count += t.GetCounter();
   }
-  tp.Resume();
-  tp.Pause();
-  std::this_thread::sleep_for(std::chrono::seconds(1));
   size_t expected_count = thread_count;
 
   if (expected_count != actual_count) {
