@@ -75,7 +75,7 @@ namespace EK {
        * @param num_threads The number of worker threads the thread pool 
        * should posses.
        */
-      void SetThreadNum(std::size_t num_threads);
+      void SetNumThreads(std::size_t num_threads);
 
       /**
        * @brief Pauses any additional tasks from executing.

@@ -1,6 +1,5 @@
 #include "thread_pool.hpp" // EK::ThreadPool
 #include <cmath>           // std::abs
-#include <functional>
 
 namespace EK {
   /**-----------------*
@@ -16,10 +15,10 @@ namespace EK {
 
   ThreadPool::~ThreadPool() {
     WaitForTasks();
-    SetThreadNum(0);
+    SetNumThreads(0);
   }
 
-  void ThreadPool::SetThreadNum(std::size_t num_threads) {
+  void ThreadPool::SetNumThreads(std::size_t num_threads) {
     size_t diff = std::abs(static_cast<long long>(num_threads - thread_count_));
     if (num_threads > thread_count_) {
       CreateThreads(diff);

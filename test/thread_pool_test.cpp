@@ -1,11 +1,10 @@
 #include "thread_pool.hpp" // EK::ThreadPool
 
-#include <array>
+#include <array>           // std::array
 #include <chrono>          // std::chrono::milliseconds, std::chrono::seconds
 #include <cstdlib>         // EXIT_FAILURE, EXIT_SUCCESS
 #include <future>          // std::future_status
 #include <iostream>        // std::cerr, std::endl
-#include <memory>          // make_unique
 #include <mutex>           // std::mutex, std::unique_lock
 #include <string>          // std::string
 #include <thread>          // std::this_thread::sleep_for
@@ -16,6 +15,7 @@ static int WaitForTasksTest();
 static int PerfectForwardingTest();
 static int PauseAndResumeTest();
 static int MultiPauseAndMultiResumeTest();
+static int SetNumThreadsTest();
 
 static int CheckPerfectForwarding(std::string&& s);
 static int CheckPerfectForwarding(const std::string& s);
