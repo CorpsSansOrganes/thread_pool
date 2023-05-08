@@ -66,7 +66,6 @@ namespace EK {
       template <typename F, typename... Args>
       auto Submit(F&& task, Args&&... args) ->
         std::future<typename std::result_of<F(Args...)>::type>;
-        //std::future<decltype(task(std::forward<Args>(args)...))>;
 
       /**
        * @brief Set the number of threads at runtime. 

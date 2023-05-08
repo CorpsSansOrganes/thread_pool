@@ -1,3 +1,4 @@
+#include "semaphore.hpp"   // EK::Semaphore
 #include "thread_pool.hpp" // EK::ThreadPool
 
 #include <array>           // std::array
@@ -8,6 +9,7 @@
 #include <mutex>           // std::mutex, std::unique_lock
 #include <string>          // std::string
 #include <thread>          // std::this_thread::sleep_for
+#include <set>             // std::set
 
 static int SmokeTest();
 static int BasicUsageTest();
@@ -33,6 +35,7 @@ int main() {
   status += PerfectForwardingTest();
   status += MultiPauseAndMultiResumeTest();
   status += PauseAndResumeTest();
+  status += SetNumThreadsTest();
 
   if (0 == status) {
     std::cerr << "SUCCESS: Thread Pool" << std::endl;
@@ -286,6 +289,68 @@ static int PauseAndResumeTest() {
 
   return status;
 }
+
+/** @brief To verify the number of threads inside the thread pool, submit twice as 
+ * many tasks as there are threads.
+ * To make sure each thread performs at least one task, after recording its id,
+ * the thread is block until it is released by the main thread.
+ * We then let the rest of the tasks to be executed, and make sure that the number
+ * of IDs isn't higher or lower than what we expected.
+ *
+ * This test is fundemantally based on the pigeonhole principle. 
+ * It is theoretically prone to a false negative, but it is highly unlikely.
+ */
+static int SetNumThreadsTest() {
+  EK::ThreadPool tp;
+  std::mutex mutex;
+  std::mutex total_mutex;
+  std::condition_variable total_cv;
+  std::array<size_t, 3> test_cases = {2, 1, 3};
+
+  for (auto thread_count : test_cases) {
+    EK::Semaphore sem;
+    size_t tasks_num = 2 * thread_count;
+    size_t total_count = 0;
+    std::set<std::thread::id> thread_ids;
+
+    tp.SetNumThreads(thread_count);
+    // Insert tasks to register id to the thread_ids set.
+    auto register_id_task = [&total_count, &mutex, &total_cv, &sem, &thread_ids] {
+          // Register id.
+          {
+            std::unique_lock<decltype(mutex)> lock(mutex);
+            thread_ids.insert(std::this_thread::get_id());
+            ++total_count;
+          }
+          total_cv.notify_one();        
+
+          // Wait for main thread to unblock.
+          sem.Acquire();
+        };
+    for (size_t i = 0; i < tasks_num; ++i) {
+      tp.Submit(register_id_task);
+    }
+
+    // Main thread wait until thread_count different thread have performed tasks.
+    // wait_for is used to prevent a deadlock if there are less threads than expected.
+    std::unique_lock<decltype(total_mutex)> lock(total_mutex);
+    total_cv.wait_for(lock,
+        std::chrono::seconds(1),
+        [&thread_count, &total_count] { return thread_count == total_count; });
+    sem.Release(tasks_num);
+    tp.WaitForTasks();
+
+    if (thread_count != thread_ids.size()) {
+      std::cerr << "ERROR: SetNumThreadsTest" << std::endl;
+      std::cerr << "Expected " << thread_count << " threads, but instead there's "
+        << thread_ids.size() << " threads in the thread pool." << std::endl;
+      return EXIT_FAILURE;
+    }
+  }
+
+  return EXIT_SUCCESS;
+}
+
 // Utilities
 
 template <typename T>
