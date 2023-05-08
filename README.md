@@ -12,6 +12,20 @@ Each component is accompanied by a test file which, in addition to ensuring corr
 
 Here I'll provide an overview of each component, a technical documentation can be found inside each respective header file.
 
+## Build
+If you're using Linux, the makefile provided can be used to create executables for each module's respective test.
+Simply run in your shell:
+```SHELL
+make all                  # Create all modules in release mode.
+make mode=debug all       # Create all modules in debug mode.
+```
+
+You can also create a specific module:
+```SHELL
+make waitable_queue       # Create waitable_queue in release mode.
+make mode=debug semaphore # Create semaphore in release mode.
+```
+
 ## Table of Content
   * [1. Thread Pool](#1-thread-pool)
     + [What is it?](#what-is-it-)

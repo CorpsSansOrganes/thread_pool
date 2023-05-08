@@ -34,7 +34,7 @@ else
 endif
 
 # Executable recipe
-all : sempahore waitable_queue thread_pool
+all : semaphore waitable_queue thread_pool
 
 semaphore : $(addprefix $(OBJ)/, $(SEM_OBJ))
 	@echo "Building $@ in $(MODE_UPPER) mode"
