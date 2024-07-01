@@ -57,6 +57,7 @@ $(OBJ)/%_test.o: $(TEST)/%_test.cpp
 
 clean:
 	rm -rf $(OBJ_DEBUG)/*.o $(OBJ_RELEASE)/*.o ./*.out
+
 # Phony targets
 .PHONY: all clean 
 
